@@ -1,0 +1,93 @@
+{% extends 'layout/auth.html' %}
+{% load filters %}
+{% block content %}
+
+    <div class="page-title" text="login"></div>
+
+    <div class="login-form no-select flex justify-center items-center min-h-screen bg-cover bg-center">
+        <div class="panel m-6" style="width: 27rem">
+            <h2 class="font-bold text-2xl mb-3" text="login"></h2>
+            <p class="mb-7" text="login_msg"></p>
+            <form class="space-y-5" method="POST">
+                <div>
+                    <label for="email" class="mb-3" text="email"></label>
+                    <input id="email" type="text" class="form-input" autocomplete="off" required>
+                    <p class="text-danger mt-2 hide email-error" style="opacity: .96; letter-spacing: .5px;" text="email_error"></p>
+                </div>
+                <div style="margin-top: 1.6rem;">
+                    <label for="password" class="mb-3" text="password"></label>
+                    <input id="password" type="password" class="form-input" autocomplete="off" required>
+                    <p class="text-danger mt-2 hide password-error" style="opacity: .96; letter-spacing: .5px;" text="password_error"></p>
+                </div>
+                <button type="submit" class="btn btn-primary w-full" style="margin-top: 2rem;" text="login"></button>
+                <p class="text-danger mt-2 active-error hide" style="opacity: .96; letter-spacing: .5px; margin-bottom: -1rem" text="not_exists_login"></p>
+                <p class="text-danger mt-2 all-error hide" style="opacity: .96; letter-spacing: .5px; margin-bottom: -1rem" text="error_msg"></p>
+            </form>
+            <div class="relative my-7 mb-5 h-5 text-center before:w-full before:h-[1px] before:absolute before:inset-0 before:m-auto before:bg-[#ebedf2] dark:before:bg-[#253b5c]">
+                <div class="font-bold text-white-dark bg-white dark:bg-[#0e1726] px-2 relative z-[1] inline-block">
+                    <span text="or"></span>
+                </div>
+            </div>
+            <p class="flex items-center justify-start mb-3">
+                <span text="no_account"></span>
+                <a href="tel:+201221083507" class="text-primary font-bold hover:underline pt-1 px-2" text="call_us"></a>
+            </p>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block script %}
+
+    <script>
+
+        $(".login-form form").submit(function(e){
+
+            e.preventDefault();
+            $(".screen_loader").css({"display": "flex", "align-items": "center"});
+            let email = $("input[id='email']").val();
+            let password = $("input[id='password']").val();
+            
+            $.ajax({
+                url: "", method: "POST", data: {"email": email, "password": password},
+                headers: {"X-XSRF-TOKEN": get_cookie("XSRF-TOKEN")},
+                success: (data) => {
+
+                    if ( data.status == "email" ) {
+                        $(".email-error").show();
+                        $("input[id='email']").css("border", "1px solid rgb(154, 44, 44)");
+                    }
+                    else {
+                        $(".email-error").hide();
+                        $("input[id='email']").css("border", "1px solid rgb(68, 110, 178)");
+                    }
+                    if ( data.status == "password" ) {
+                        $(".password-error").show();
+                        $("input[id='password']").css("border", "1px solid rgb(154, 44, 44)");
+                    }
+                    else {
+                        $(".password-error").hide();
+                        $("input[id='password']").css("border", "1px solid rgb(68, 110, 178)");
+                    }
+                    if ( data.status == "active" ) $(".active-error").show();
+                    else $(".active-error").hide();
+                    if ( data.status == true ) {
+                        history.back();
+                        location.replace("/");
+                        return false;
+                    }
+                    else $(".screen_loader").fadeOut(150);
+
+                },
+                error: (data) => {
+                    $(".work-error, .active-error").hide();
+                    $(".all-error").show();
+                    $(".screen_loader").fadeOut(150);
+                }
+            });
+
+        });
+
+    </script>
+
+{% endblock %}

@@ -1,0 +1,354 @@
+{% extends 'layout/default.html' %}
+{% load filters %}
+{% block content %}
+
+    <div class="page-title" text="edit_project"></div>
+
+    <div class="edit-item-info">
+
+        <div class="flex xl:flex-row flex-col gap-2.5">
+
+            <div class="flex flex-col flex-1">
+
+                <div class="panel px-0 flex-1 py-6 pb-8 ltr:xl:mr-6 rtl:xl:ml-6 no-select">
+
+                    <div class="px-4">
+
+                        <div class="flex justify-between lg:flex-row flex-col">
+
+                            <div class="w-full mb-6 div-2">
+
+                                <div class="mt-4 flex items-center">
+                                    <label for="name" class="ltr:mr-2 rtl:ml-2 w-1/5 mb-0" text="project_name"></label>
+                                    <input id="name" type="text" name="name" value="{{project.name|value}}" class="form-input flex-1" autocomplete="off">
+                                </div>
+
+                                <div class="mt-4 flex items-start">
+                                    <label for="description" class="ltr:mr-2 rtl:ml-2 w-1/5 mb-0" text="description"></label>
+                                    <textarea id="description" name="description" class="form-textarea flex-1 no-resize" rows="3">{{project.description|value}}</textarea>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="flex justify-start items-center w-full mt-6 py-2 pt-4 no-select project-btns">
+
+                    <div class="btn btn btn-success no-shadow" onclick="$('.task-table').fadeIn(300);$('.file-table').hide();">
+                        <span class="material-symbols-outlined icon">calendar_today</span>
+                        <span text="tasks"></span>
+                    </div>
+
+                    <div class="btn btn btn-primary no-shadow ltr:ml-4 rtl:mr-4" onclick="$('.task-table').hide();$('.file-table').fadeIn(300);">
+                        <span class="material-symbols-outlined icon">folder_open</span>
+                        <span text="files"></span>
+                    </div>
+
+                </div>
+
+                <div class="panel p-0 flex-1 mt-4 ltr:xl:mr-6 rtl:xl:ml-6">
+
+                    <div class="div-table task-table w-full">
+
+                        <div class="font-semibold p-4 no-select">~ &nbsp; <span text="all_tasks"></span></div>
+
+                        <div class="table dataTable-container">
+
+                            <table class="dataTable-table task-table">
+
+                                <thead>
+                                    <tr>
+                                        <th><a text="name"></a></th>
+                                        <th><a text="user"></a></th>
+                                        <th><a text="status"></a></th>
+                                        <th><a text="date"></a></th>
+                                        <th><a text="actions"></a></th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    {% for ch in tasks %}
+                                        <tr id="{{ch.id}}">
+                                            <td>
+                                                <a href="/edit-task/{{ch.id}}" class="pointer image for-ar hover:text-primary">
+                                                    <span class="material-symbols-outlined icon">calendar_today</span>
+                                                    <span class="font-semibold">{{ch.name|slice:30}}</span>
+                                                </a>
+                                            </td>
+                                            <td>
+                                                {% if ch.user_id|get_user %}
+                                                    <a href="/edit-user/{{ch.user_id}}" class="pointer image for-ar hover:text-primary">
+                                                        <div class="layer-div circle"><img src="/static/media/user/{{ch.user_id|user_image}}"></div>
+                                                        <span class="font-semibold">{{ch.user_id|get_user|slice:30}}</span>
+                                                    </a>
+                                                {% else %}
+                                                    <a class="font-semibold">-</a>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if ch.status %}
+                                                    <span class='no-select badge badge-outline-success' text="finished"></span>
+                                                {% else %}
+                                                    <span class='no-select badge badge-outline-warning' text="pending"></span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <a class="font-semibold default">{{ch.date}}</a>
+                                            </td>
+                                            <td class="buttons gap-4">
+                                                <button class="btn btn-sm btn-outline-danger" text="delete" onclick="delete_item('{{ch.id}}', 'task')"></button>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+
+                            </table>
+
+                            {% if tasks %}
+                                <div class='empty' style="display: none;" text="no_data"></div>
+                            {% else %}
+                                <div class='empty' text="no_data"></div>
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+                    <div class="div-table file-table w-full hide">
+
+                        <div class="font-semibold p-4 no-select">
+                            ~ / <span text="app"></span> / <span text="home"></span> / <span text="archive"></span> / {{project.name}}
+                        </div>
+
+                        <div class="table dataTable-container">
+                            
+                            <table class="dataTable-table file-table">
+
+                                <thead>
+                                    <tr>
+                                        <th><a text="name"></a></th>
+                                        <th><a text="size"></a></th>
+                                        <th><a text="date"></a></th>
+                                        <th><a text="actions"></a></th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    {% for ch in files %}
+                                        <tr id="{{ch.id}}">
+                                            <td>
+                                                <a class="default image for-ar">
+                                                    {% if ch.type == 'image' %}
+                                                        <span class="material-symbols-outlined icon">image</span>
+                                                    {% elif ch.type == 'video' %}
+                                                        <span class="material-symbols-outlined icon">play_circle</span>
+                                                    {% else %}
+                                                        <span class="material-symbols-outlined icon">folder_open</span>
+                                                    {% endif %}
+                                                    <span class="font-semibold">{{ch.name|slice:30}}</span>
+                                                </a>
+                                            </td>
+                                            <td>
+                                                <a class="font-semibold default">{{ch.size}}</a>
+                                            </td>
+                                            <td>
+                                                <a class="font-semibold default">{{ch.date}}</a>
+                                            </td>
+                                            <td class="buttons gap-4">
+                                                <a href="/static/media/task/{{ch.link}}" class="btn btn-sm btn-outline-primary" download text="download"></a>
+                                                <button class="btn btn-sm btn-outline-danger" text="delete" onclick="delete_item('{{ch.id}}', 'file')"></button>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+
+                            </table>
+
+                            {% if files %}
+                                <div class='empty' style="display: none;" text="no_data"></div>
+                            {% else %}
+                                <div class='empty' text="no_data"></div>
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="xl:w-96 w-full xl:mt-0 mt-6 left-tab no-select">
+
+                <div>
+
+                    <div class="panel mb-5 pb-2">
+
+                        <div class="grid sm:grid-cols-2 grid-cols-1 gap-4 mt-2">
+
+                            <div>
+
+                                <label for="days" class="mb-3" text="days"></label>
+
+                                <input id="days" type="number" name="days" value="{{project.days}}" min="0" class="form-input">
+
+                            </div>
+
+                            <div>
+
+                                <label for="date" class="mb-3" text="date"></label>
+
+                                <input id="date" type="text" name="date" value="{{project.date|date}}" class="form-input default" readonly>
+
+                            </div>
+
+                        </div>
+
+                        <hr class="border-[#e0e6ed] dark:border-[#1b2e4b] mt-6 mb-6">
+                            
+                        <div class="grid sm:grid-cols-2 grid-cols-1 gap-4 mt-6 mb-2">
+
+                            <div class="check-input">
+
+                                <label class="w-12 h-6 relative">
+                                    
+                                    {% if project.finished %}
+                                        <input checked id="finished" name="finished" type="checkbox" class="absolute w-full h-full opacity-0 z-10 pointer peer">
+                                    {% else %}
+                                        <input id="finished" name="finished" type="checkbox" class="absolute w-full h-full opacity-0 z-10 pointer peer">
+                                    {% endif %}
+
+                                    <span class="bg-[#ebedf2] dark:bg-dark block h-full rounded-full before:absolute before:left-1 
+                                        before:bg-white dark:before:bg-white-dark dark:peer-checked:before:bg-white before:bottom-1 
+                                        before:w-4 before:h-4 before:rounded-full peer-checked:before:left-7 peer-checked:bg-primary 
+                                        before:transition-all before:duration-300">
+                                    </span>
+    
+                                </label>
+    
+                                <label for="finished" class="ltr:pl-3 rtl:pr-3 pointer" text="finished"></label>
+    
+                            </div>
+    
+                            <div class="check-input">
+    
+                                <label class="w-12 h-6 relative">
+                                    
+                                    {% if project.active %}
+                                        <input checked id="active" name="active" type="checkbox" class="absolute w-full h-full opacity-0 z-10 pointer peer">
+                                    {% else %}
+                                        <input id="active" name="active" type="checkbox" class="absolute w-full h-full opacity-0 z-10 pointer peer">
+                                    {% endif %}
+
+                                    <span class="bg-[#ebedf2] dark:bg-dark block h-full rounded-full before:absolute before:left-1 
+                                        before:bg-white dark:before:bg-white-dark dark:peer-checked:before:bg-white before:bottom-1 
+                                        before:w-4 before:h-4 before:rounded-full peer-checked:before:left-7 peer-checked:bg-primary 
+                                        before:transition-all before:duration-300">
+                                    </span>
+    
+                                </label>
+    
+                                <label for="active" class="ltr:pl-3 rtl:pr-3 pointer" text="active"></label>
+    
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="panel">
+
+                        <div class="grid xl:grid-cols-1 lg:grid-cols-4 sm:grid-cols-2 grid-cols-1 gap-4">
+
+                            <button type="button" onclick="save_data()" class="pointer btn btn-success w-full gap-2">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 ltr:mr-2 rtl:ml-2">
+                                    <path d="M3.46447 20.5355C4.92893 22 7.28595 22 12 22C16.714 22 19.0711 22 20.5355 20.5355C22 19.0711 22 16.714 22 12C22 11.6585 22 11.4878 21.9848 11.3142C21.9142 10.5049 21.586 9.71257 21.0637 9.09034C20.9516 8.95687 20.828 8.83317 20.5806 8.58578L15.4142 3.41944C15.1668 3.17206 15.0431 3.04835 14.9097 2.93631C14.2874 2.414 13.4951 2.08581 12.6858 2.01515C12.5122 2 12.3415 2 12 2C7.28595 2 4.92893 2 3.46447 3.46447C2 4.92893 2 7.28595 2 12C2 16.714 2 19.0711 3.46447 20.5355Z" stroke="currentColor" stroke-width="1.5" />
+                                    <path d="M17 22V21C17 19.1144 17 18.1716 16.4142 17.5858C15.8284 17 14.8856 17 13 17H11C9.11438 17 8.17157 17 7.58579 17.5858C7 18.1716 7 19.1144 7 21V22" stroke="currentColor" stroke-width="1.5" />
+                                    <path opacity="0.5" d="M7 8H13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                                </svg>
+                                <span text="save"></span>&nbsp;
+                            </button>
+                            <button type="button" class="pointer close-item btn btn-warning w-full gap-2">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 ltr:mr-2 rtl:ml-2">
+                                    <path d="M12 7V13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
+                                    <circle cx="12" cy="16" r="1" fill="currentColor"></circle>
+                                    <path opacity="0.5" d="M7.84308 3.80211C9.8718 2.6007 10.8862 2 12 2C13.1138 2 14.1282 2.6007 16.1569 3.80211L16.8431 4.20846C18.8718 5.40987 19.8862 6.01057 20.4431 7C21 7.98943 21 9.19084 21 11.5937V12.4063C21 14.8092 21 16.0106 20.4431 17C19.8862 17.9894 18.8718 18.5901 16.8431 19.7915L16.1569 20.1979C14.1282 21.3993 13.1138 22 12 22C10.8862 22 9.8718 21.3993 7.84308 20.1979L7.15692 19.7915C5.1282 18.5901 4.11384 17.9894 3.55692 17C3 16.0106 3 14.8092 3 12.4063V11.5937C3 9.19084 3 7.98943 3.55692 7C4.11384 6.01057 5.1282 5.40987 7.15692 4.20846L7.84308 3.80211Z" stroke="currentColor" stroke-width="1.5"></path>
+                                </svg>
+                                <span text="cancel"></span>
+                            </button>
+                            <button type="button" class="pointer delete-item btn btn-danger w-full gap-2">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 ltr:mr-2 rtl:ml-2">
+                                    <path opacity="0.5" d="M9.17065 4C9.58249 2.83481 10.6937 2 11.9999 2C13.3062 2 14.4174 2.83481 14.8292 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
+                                    <path d="M20.5001 6H3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
+                                    <path d="M18.8334 8.5L18.3735 15.3991C18.1965 18.054 18.108 19.3815 17.243 20.1907C16.378 21 15.0476 21 12.3868 21H11.6134C8.9526 21 7.6222 21 6.75719 20.1907C5.89218 19.3815 5.80368 18.054 5.62669 15.3991L5.16675 8.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
+                                    <path opacity="0.5" d="M9.5 11L10 16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
+                                    <path opacity="0.5" d="M14.5 11L14 16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
+                                </svg>
+                                <span text="delete"></span>
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+{% endblock %}
+
+{% block script %}
+
+    <script>
+
+        manage_item("projects", true);
+        let del_files = [];
+        let del_tasks = [];
+
+        const save_data = _ => {
+
+            let data = {
+                "name": trim($(".edit-item-info input[name='name']").val()),
+                "description": trim($(".edit-item-info textarea[name='description']").val()),
+                "days": parseInt($(".edit-item-info input[name='days']").val()) || 0,
+                "finished": $(".edit-item-info input[name='finished']").prop("checked"),
+                "active": $(".edit-item-info input[name='active']").prop("checked"),
+                'del_tasks': JSON.stringify(del_tasks),
+                'del_files': JSON.stringify(del_files),
+            }
+
+            if ( ! trim($(".edit-item-info input[name='name']").val()) ) return show_msg(text("error_name"), "error");
+
+            send_data("/edit-project/{{project.id}}", data);
+
+        }
+
+        const delete_item = ( id, type ) => {
+
+            if ( confirm(text('delete_item_msg')) ){
+
+                if ( type === 'task' ) del_tasks.push(id);
+
+                else del_files.push(id);
+
+                $(`.edit-item-info .table .${type}-table tr#${id}`).remove();
+
+                if ( !$(`.edit-item-info .table .${type}-table tbody td`).length )
+
+                    $(`.edit-item-info .table .${type}-table`).parents('.table').find('.empty').show();
+
+            }
+
+        }
+
+    </script>
+
+{% endblock %}

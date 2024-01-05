@@ -1,0 +1,1009 @@
+{% extends 'layout/default.html' %}
+{% load filters %}
+{% block content %}
+    
+    <div class="page-title" text="mailbox"></div>
+
+    <div x-data="mailbox" class="mailbox relative">
+
+        <div class="panel p-0 flex-1 h-full" style="overflow-x: visible;">
+
+            <div x-show="!selectedMail && !isEdit" class="flex flex-col h-full realtive">
+
+                <div class="flex justify-between items-center flex-wrap gap-4 p-4 no-select">
+
+                    <div class="flex items-center w-full sm:w-auto">
+
+                        <div class="ltr:mr-4 rtl:ml-4 flex items-center mail-tabs">
+
+                            <button text="new_msg" class="set-text btn text-white btn-outline-primary bg-primary w-full ltr:sm:mr-4 rtl:sm:ml-4" type="button" @click="openMail()">
+                            </button>
+
+                            <div class="flex grow items-center sm:flex-none gap-4 ltr:sm:mr-4 rtl:sm:ml-4">
+
+                                <button text="inbox" type="button" class="set-text btn btn-outline-danger flex" :class="{ 'text-white bg-danger': selectedTab === 'inbox' }" @click="tabChanged('inbox')">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ltr:mr-2 rtl:ml-2">
+                                        <path opacity="0.5" d="M2 12C2 8.22876 2 6.34315 3.17157 5.17157C4.34315 4 6.22876 4 10 4H14C17.7712 4 19.6569 4 20.8284 5.17157C22 6.34315 22 8.22876 22 12C22 15.7712 22 17.6569 20.8284 18.8284C19.6569 20 17.7712 20 14 20H10C6.22876 20 4.34315 20 3.17157 18.8284C2 17.6569 2 15.7712 2 12Z" stroke="currentColor" stroke-width="1.5"></path>
+                                        <path d="M6 8L8.1589 9.79908C9.99553 11.3296 10.9139 12.0949 12 12.0949C13.0861 12.0949 14.0045 11.3296 15.8411 9.79908L18 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
+                                    </svg>
+                                </button>
+
+                                <button text="send" type="button" class="set-text btn btn-outline-success flex" :class="{ 'text-white bg-success': selectedTab === 'send' }" @click="tabChanged('send')">
+                                    <svg style="transform: rotate(50deg);" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ltr:mr-2 rtl:ml-2">
+                                        <path d="M17.4975 18.4851L20.6281 9.09373C21.8764 5.34874 22.5006 3.47624 21.5122 2.48782C20.5237 1.49939 18.6511 2.12356 14.906 3.37189L5.57477 6.48218C3.49295 7.1761 2.45203 7.52305 2.13608 8.28637C2.06182 8.46577 2.01692 8.65596 2.00311 8.84963C1.94433 9.67365 2.72018 10.4495 4.27188 12.0011L4.55451 12.2837C4.80921 12.5384 4.93655 12.6658 5.03282 12.8075C5.22269 13.0871 5.33046 13.4143 5.34393 13.7519C5.35076 13.9232 5.32403 14.1013 5.27057 14.4574C5.07488 15.7612 4.97703 16.4131 5.0923 16.9147C5.32205 17.9146 6.09599 18.6995 7.09257 18.9433C7.59255 19.0656 8.24576 18.977 9.5522 18.7997L9.62363 18.79C9.99191 18.74 10.1761 18.715 10.3529 18.7257C10.6738 18.745 10.9838 18.8496 11.251 19.0285C11.3981 19.1271 11.5295 19.2585 11.7923 19.5213L12.0436 19.7725C13.5539 21.2828 14.309 22.0379 15.1101 21.9985C15.3309 21.9877 15.5479 21.9365 15.7503 21.8474C16.4844 21.5244 16.8221 20.5113 17.4975 18.4851Z" stroke="currentColor" stroke-width="1.5"></path>
+                                        <path opacity="0.5" d="M6 18L21 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
+                                    </svg>
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="flex justify-between items-center sm:w-auto w-full">
+
+                        <div class="flex items-center mail-search">
+
+                            <div class="relative group mail-search">
+
+                                <input type="text" text="search" class="form-input peer" x-model="searchText" @keyup="searchMails">
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="h-px border-b border-[#e0e6ed] dark:border-[#1b2e4b]"></div>
+
+                <div class="flex flex-col md:flex-row xl:w-auto justify-between items-center px-4 pb-4 mail-actions no-select">
+
+                    <div class="mt-4 flex items-center flex-1">
+                        <input type="checkbox" class="form-checkbox" :checked="checkAllCheckbox" :value="checkAllCheckbox" @change="checkAll($event.target.checked)">
+                        <div class="flex items-center" style="margin: 0 1.5rem">
+                            <ul class="flex grow items-center sm:flex-none gap-4 ltr:sm:mr-4 rtl:sm:ml-4">
+                                <li>
+                                    <div data-placement="top" role="tooltip" @click="reload">
+                                        <button type="button" class="hover:text-primary flex items-center">
+                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5">
+                                                <path d="M12.0789 3V2.25V3ZM3.67981 11.3333H2.92981H3.67981ZM3.67981 13L3.15157 13.5324C3.44398 13.8225 3.91565 13.8225 4.20805 13.5324L3.67981 13ZM5.88787 11.8657C6.18191 11.574 6.18377 11.0991 5.89203 10.8051C5.60029 10.511 5.12542 10.5092 4.83138 10.8009L5.88787 11.8657ZM2.52824 10.8009C2.2342 10.5092 1.75933 10.511 1.46759 10.8051C1.17585 11.0991 1.17772 11.574 1.47176 11.8657L2.52824 10.8009ZM18.6156 7.39279C18.8325 7.74565 19.2944 7.85585 19.6473 7.63892C20.0001 7.42199 20.1103 6.96007 19.8934 6.60721L18.6156 7.39279ZM12.0789 2.25C7.03155 2.25 2.92981 6.3112 2.92981 11.3333H4.42981C4.42981 7.15072 7.84884 3.75 12.0789 3.75V2.25ZM2.92981 11.3333L2.92981 13H4.42981L4.42981 11.3333H2.92981ZM4.20805 13.5324L5.88787 11.8657L4.83138 10.8009L3.15157 12.4676L4.20805 13.5324ZM4.20805 12.4676L2.52824 10.8009L1.47176 11.8657L3.15157 13.5324L4.20805 12.4676ZM19.8934 6.60721C18.287 3.99427 15.3873 2.25 12.0789 2.25V3.75C14.8484 3.75 17.2727 5.20845 18.6156 7.39279L19.8934 6.60721Z" fill="currentColor"></path>
+                                                <path opacity="0.5" d="M11.8825 21V21.75V21ZM20.3137 12.6667H21.0637H20.3137ZM20.3137 11L20.8409 10.4666C20.5487 10.1778 20.0786 10.1778 19.7864 10.4666L20.3137 11ZM18.1002 12.1333C17.8056 12.4244 17.8028 12.8993 18.094 13.1939C18.3852 13.4885 18.86 13.4913 19.1546 13.2001L18.1002 12.1333ZM21.4727 13.2001C21.7673 13.4913 22.2421 13.4885 22.5333 13.1939C22.8245 12.8993 22.8217 12.4244 22.5271 12.1332L21.4727 13.2001ZM5.31769 16.6061C5.10016 16.2536 4.63806 16.1442 4.28557 16.3618C3.93307 16.5793 3.82366 17.0414 4.0412 17.3939L5.31769 16.6061ZM11.8825 21.75C16.9448 21.75 21.0637 17.6915 21.0637 12.6667H19.5637C19.5637 16.8466 16.133 20.25 11.8825 20.25V21.75ZM21.0637 12.6667V11H19.5637V12.6667H21.0637ZM19.7864 10.4666L18.1002 12.1333L19.1546 13.2001L20.8409 11.5334L19.7864 10.4666ZM19.7864 11.5334L21.4727 13.2001L22.5271 12.1332L20.8409 10.4666L19.7864 11.5334ZM4.0412 17.3939C5.65381 20.007 8.56379 21.75 11.8825 21.75V20.25C9.09999 20.25 6.6656 18.7903 5.31769 16.6061L4.0412 17.3939Z" fill="currentColor"></path>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div data-placement="top" role="tooltip" @click="removeMail">
+                                        <button type="button" class="hover:text-primary flex items-center">
+                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5">
+                                                <path opacity="0.5" d="M9.17065 4C9.58249 2.83481 10.6937 2 11.9999 2C13.3062 2 14.4174 2.83481 14.8292 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
+                                                <path d="M20.5001 6H3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
+                                                <path d="M18.8334 8.5L18.3735 15.3991C18.1965 18.054 18.108 19.3815 17.243 20.1907C16.378 21 15.0476 21 12.3868 21H11.6134C8.9526 21 7.6222 21 6.75719 20.1907C5.89218 19.3815 5.80368 18.054 5.62669 15.3991L5.16675 8.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
+                                                <path opacity="0.5" d="M9.5 11L10 16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
+                                                <path opacity="0.5" d="M14.5 11L14 16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div x-data="dropdown" @click.outside="open = false" class="dropdown">
+                                        <button type="button" class="hover:text-primary flex items-center" @click="toggle">
+                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 rotate-90 opacity-70">
+                                                <circle cx="5" cy="12" r="2" stroke="currentColor" stroke-width="1.5" />
+                                                <circle opacity="0.5" cx="12" cy="12" r="2" stroke="currentColor" stroke-width="1.5" />
+                                                <circle cx="19" cy="12" r="2" stroke="currentColor" stroke-width="1.5" />
+                                            </svg>
+                                        </button>
+                                        <ul @click="toggle" x-cloak x-show="open" x-transition x-transition.duration.300ms class="ltr:-right-0 rtl:-left-0 whitespace-nowrap">
+                                            <li>
+                                                <button type="button" class="w-full" @click="setAction('read')">
+                                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 ltr:mr-2 rtl:ml-2 shrink-0">
+                                                        <path d="M20.082 3.01787L20.1081 3.76741L20.082 3.01787ZM16.5 3.48757L16.2849 2.76907V2.76907L16.5 3.48757ZM13.6738 4.80287L13.2982 4.15375L13.2982 4.15375L13.6738 4.80287ZM3.9824 3.07501L3.93639 3.8236L3.9824 3.07501ZM7 3.48757L7.19136 2.76239V2.76239L7 3.48757ZM10.2823 4.87558L9.93167 5.5386L10.2823 4.87558ZM13.6276 20.0694L13.9804 20.7312L13.6276 20.0694ZM17 18.6335L16.8086 17.9083H16.8086L17 18.6335ZM19.9851 18.2229L20.032 18.9715L19.9851 18.2229ZM10.3724 20.0694L10.0196 20.7312H10.0196L10.3724 20.0694ZM7 18.6335L7.19136 17.9083H7.19136L7 18.6335ZM4.01486 18.2229L3.96804 18.9715H3.96804L4.01486 18.2229ZM2.75 16.1437V4.99792H1.25V16.1437H2.75ZM22.75 16.1437V4.93332H21.25V16.1437H22.75ZM20.0559 2.26832C18.9175 2.30798 17.4296 2.42639 16.2849 2.76907L16.7151 4.20606C17.6643 3.92191 18.9892 3.80639 20.1081 3.76741L20.0559 2.26832ZM16.2849 2.76907C15.2899 3.06696 14.1706 3.6488 13.2982 4.15375L14.0495 5.452C14.9 4.95981 15.8949 4.45161 16.7151 4.20606L16.2849 2.76907ZM3.93639 3.8236C4.90238 3.88297 5.99643 3.99842 6.80864 4.21274L7.19136 2.76239C6.23055 2.50885 5.01517 2.38707 4.02841 2.32642L3.93639 3.8236ZM6.80864 4.21274C7.77076 4.46663 8.95486 5.02208 9.93167 5.5386L10.6328 4.21257C9.63736 3.68618 8.32766 3.06224 7.19136 2.76239L6.80864 4.21274ZM13.9804 20.7312C14.9714 20.2029 16.1988 19.6206 17.1914 19.3587L16.8086 17.9083C15.6383 18.2171 14.2827 18.8702 13.2748 19.4075L13.9804 20.7312ZM17.1914 19.3587C17.9943 19.1468 19.0732 19.0314 20.032 18.9715L19.9383 17.4744C18.9582 17.5357 17.7591 17.6575 16.8086 17.9083L17.1914 19.3587ZM10.7252 19.4075C9.71727 18.8702 8.3617 18.2171 7.19136 17.9083L6.80864 19.3587C7.8012 19.6206 9.0286 20.2029 10.0196 20.7312L10.7252 19.4075ZM7.19136 17.9083C6.24092 17.6575 5.04176 17.5357 4.06168 17.4744L3.96804 18.9715C4.9268 19.0314 6.00566 19.1468 6.80864 19.3587L7.19136 17.9083ZM21.25 16.1437C21.25 16.8295 20.6817 17.4279 19.9383 17.4744L20.032 18.9715C21.5062 18.8793 22.75 17.6799 22.75 16.1437H21.25ZM22.75 4.93332C22.75 3.47001 21.5847 2.21507 20.0559 2.26832L20.1081 3.76741C20.7229 3.746 21.25 4.25173 21.25 4.93332H22.75ZM1.25 16.1437C1.25 17.6799 2.49378 18.8793 3.96804 18.9715L4.06168 17.4744C3.31831 17.4279 2.75 16.8295 2.75 16.1437H1.25ZM13.2748 19.4075C12.4825 19.8299 11.5175 19.8299 10.7252 19.4075L10.0196 20.7312C11.2529 21.3886 12.7471 21.3886 13.9804 20.7312L13.2748 19.4075ZM13.2982 4.15375C12.4801 4.62721 11.4617 4.65083 10.6328 4.21257L9.93167 5.5386C11.2239 6.22189 12.791 6.18037 14.0495 5.452L13.2982 4.15375ZM2.75 4.99792C2.75 4.30074 3.30243 3.78463 3.93639 3.8236L4.02841 2.32642C2.47017 2.23065 1.25 3.49877 1.25 4.99792H2.75Z" fill="currentColor" />
+                                                        <path opacity="0.5" d="M12 5.854V20.9999" stroke="currentColor" stroke-width="1.5" />
+                                                        <path opacity="0.5" d="M5 9L9 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                                                        <path opacity="0.5" d="M19 9L15 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                                                        <path opacity="0.5" d="M5 13L9 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                                                        <path opacity="0.5" d="M19 13L15 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                                                    </svg>
+                                                    <span text="mark_as_read"></span>
+                                                </button>
+                                            </li>
+                                            <li>
+                                                <button type="button" class="w-full" @click="setAction('unread')">
+                                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 ltr:mr-2 rtl:ml-2 shrink-0">
+                                                        <path d="M4 8C4 5.17157 4 3.75736 4.87868 2.87868C5.75736 2 7.17157 2 10 2H14C16.8284 2 18.2426 2 19.1213 2.87868C20 3.75736 20 5.17157 20 8V16C20 18.8284 20 20.2426 19.1213 21.1213C18.2426 22 16.8284 22 14 22H10C7.17157 22 5.75736 22 4.87868 21.1213C4 20.2426 4 18.8284 4 16V8Z" stroke="currentColor" stroke-width="1.5" />
+                                                        <path opacity="0.5" d="M6.12132 16.1022L5.92721 15.3778L6.12132 16.1022ZM3.27556 18.0294C3.16835 18.4295 3.40579 18.8408 3.80589 18.948C4.20599 19.0552 4.61724 18.8178 4.72444 18.4177L3.27556 18.0294ZM6.25 16C6.25 16.4142 6.58579 16.75 7 16.75C7.41421 16.75 7.75 16.4142 7.75 16H6.25ZM7.75 2.5C7.75 2.08579 7.41421 1.75 7 1.75C6.58579 1.75 6.25 2.08579 6.25 2.5H7.75ZM7.89778 16.75H19.8978V15.25H7.89778V16.75ZM7.89778 15.25C7.01609 15.25 6.42812 15.2436 5.92721 15.3778L6.31543 16.8267C6.57752 16.7564 6.91952 16.75 7.89778 16.75V15.25ZM5.92721 15.3778C4.63311 15.7245 3.62231 16.7353 3.27556 18.0294L4.72444 18.4177C4.9325 17.6412 5.53898 17.0347 6.31543 16.8267L5.92721 15.3778ZM7.75 16V2.5H6.25V16H7.75Z" fill="currentColor" />
+                                                    </svg>
+                                                    <span text="mark_as_unread"></span>
+                                                </button>
+                                            </li>
+                                            <li>
+                                                <button type="button" class="w-full" @click="removeMail">
+                                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 ltr:mr-2 rtl:ml-2 shrink-0">
+                                                        <path opacity="0.5" d="M9.17065 4C9.58249 2.83481 10.6937 2 11.9999 2C13.3062 2 14.4174 2.83481 14.8292 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                                                        <path d="M20.5001 6H3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                                                        <path d="M18.8334 8.5L18.3735 15.3991C18.1965 18.054 18.108 19.3815 17.243 20.1907C16.378 21 15.0476 21 12.3868 21H11.6134C8.9526 21 7.6222 21 6.75719 20.1907C5.89218 19.3815 5.80368 18.054 5.62669 15.3991L5.16675 8.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                                                        <path opacity="0.5" d="M9.5 11L10 16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                                                        <path opacity="0.5" d="M14.5 11L14 16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                                                    </svg>
+                                                    <span text="delete"></span>
+                                                </button>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 md:flex-auto flex-1">
+                        <div class="flex items-center md:justify-end justify-center">
+                            <div class="ltr:mr-3 rtl:ml-3" x-text="filteredMailList.length + ' - ' + (pager.startIndex+1)">
+                            </div>
+                            <button type="button" :disabled="pager.currentPage == 1" class="bg-[#f4f4f4] rounded-md p-1 enabled:hover:bg-primary-light dark:bg-white-dark/20 enabled:dark:hover:bg-white-dark/30 ltr:mr-3 rtl:ml-3 disabled:opacity-60 disabled:cursor-not-allowed" @click="pager.currentPage--,searchMails(false)">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 rtl:rotate-180">
+                                    <path d="M15 5L9 12L15 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                                </svg>
+                            </button>
+                            <button type="button" :disabled="pager.currentPage == pager.totalPages" class="bg-[#f4f4f4] rounded-md p-1 enabled:hover:bg-primary-light dark:bg-white-dark/20 enabled:dark:hover:bg-white-dark/30 disabled:opacity-60 disabled:cursor-not-allowed" @click="pager.currentPage++,searchMails(false)">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 ltr:rotate-180">
+                                    <path d="M15 5L9 12L15 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="h-px border-b border-[#e0e6ed] dark:border-[#1b2e4b]"></div>
+
+                <template x-if="pagedMails.length">
+                    <div class="table-responsive grow overflow-y-auto min-h-[300px]">
+                        <table>
+                            <tbody>
+                                <template x-for="mail in pagedMails" :key="mail.id + '' + index">
+                                    <tr class="cursor-pointer no-select">
+                                        <td @click="selectMail(mail)">
+                                            <div class="flex items-center whitespace-nowrap">
+                                                <div class="ltr:mr-1 rtl:ml-1">
+                                                    <input type="checkbox" :id="`chk-${mail.id}`" x-model.number="ids" :value="(mail.id)" @click="$event.stopPropagation()" class="form-checkbox" style="margin-top: -2px">
+                                                </div>
+                                                <div class="flex items-center layer-div" style="margin: 0 1rem;">
+                                                    <div class="rounded-full w-max ltr:mr-3 rtl:ml-3" style="border: 1px solid rgb(108, 108, 255);">
+                                                        <img class="h-7 w-7 rounded-full object-cover mail-image" :src="mail.image">
+                                                    </div>
+                                                    <div class="dark:text-gray-300 whitespace-nowrap font-semibold" :class="{
+                                                                'text-gray-500 dark:text-gray-500 font-normal': !mail
+                                                                    .isUnread
+                                                    }" x-text="mail.name.length > 25 ? mail.name.slice(0, 25) + '...': mail.name">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td @click="selectMail(mail)" class="mail-content">
+                                            <div class="font-medium text-white-dark overflow-hidden min-w-[300px] line-clamp-1">
+                                                <span :class="{'text-gray-800 dark:text-gray-300 font-semibold': mail.isUnread}">
+                                                    <span x-text="mail.title"></span> &minus;
+                                                    <span x-text="mail.displayDescription"></span>
+                                                </span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="flex items-center">
+                                                <div class="flex items-center justify-between m-0" style="width: 3.5rem;">
+                                                    <button data-placement="top" role="tooltip" type="button" class="enabled:hover:text-warning disabled:opacity-60 ltr:mr-0 rtl:ml-0" :class="{ 'text-warning': mail.isStar }" @click="setStar(mail.id)" :disabled="selectedTab === 'trash'">
+                                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" style="transform: scale(.93); margin-top: -1px;" :class="{ 'fill-warning': mail.isStar }">
+                                                            <path d="M9.15316 5.40838C10.4198 3.13613 11.0531 2 12 2C12.9469 2 13.5802 3.13612 14.8468 5.40837L15.1745 5.99623C15.5345 6.64193 15.7144 6.96479 15.9951 7.17781C16.2757 7.39083 16.6251 7.4699 17.3241 7.62805L17.9605 7.77203C20.4201 8.32856 21.65 8.60682 21.9426 9.54773C22.2352 10.4886 21.3968 11.4691 19.7199 13.4299L19.2861 13.9372C18.8096 14.4944 18.5713 14.773 18.4641 15.1177C18.357 15.4624 18.393 15.8341 18.465 16.5776L18.5306 17.2544C18.7841 19.8706 18.9109 21.1787 18.1449 21.7602C17.3788 22.3417 16.2273 21.8115 13.9243 20.7512L13.3285 20.4768C12.6741 20.1755 12.3469 20.0248 12 20.0248C11.6531 20.0248 11.3259 20.1755 10.6715 20.4768L10.0757 20.7512C7.77268 21.8115 6.62118 22.3417 5.85515 21.7602C5.08912 21.1787 5.21588 19.8706 5.4694 17.2544L5.53498 16.5776C5.60703 15.8341 5.64305 15.4624 5.53586 15.1177C5.42868 14.773 5.19043 14.4944 4.71392 13.9372L4.2801 13.4299C2.60325 11.4691 1.76482 10.4886 2.05742 9.54773C2.35002 8.60682 3.57986 8.32856 6.03954 7.77203L6.67589 7.62805C7.37485 7.4699 7.72433 7.39083 8.00494 7.17781C8.28555 6.96479 8.46553 6.64194 8.82547 5.99623L9.15316 5.40838Z" stroke="currentColor" stroke-width="1.5" />
+                                                        </svg>
+                                                    </button>
+                                                    <button data-placement="top" role="tooltip" type="button" class="enabled:hover:text-primary disabled:opacity-60 rtl:ml-0 ltr:m-0" :class="{ 'text-primary': mail.isImportant }" @click="setImportant(mail.id)" :disabled="selectedTab === 'trash'">
+                                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-4.5 h-4.5 rotate-90" :class="{ 'fill-primary': mail.isImportant }">
+                                                            <path d="M21 16.0909V11.0975C21 6.80891 21 4.6646 19.682 3.3323C18.364 2 16.2426 2 12 2C7.75736 2 5.63604 2 4.31802 3.3323C3 4.6646 3 6.80891 3 11.0975V16.0909C3 19.1875 3 20.7358 3.73411 21.4123C4.08421 21.735 4.52615 21.9377 4.99692 21.9915C5.98402 22.1045 7.13673 21.0849 9.44216 19.0458C10.4612 18.1445 10.9708 17.6938 11.5603 17.5751C11.8506 17.5166 12.1494 17.5166 12.4397 17.5751C13.0292 17.6938 13.5388 18.1445 14.5578 19.0458C16.8633 21.0849 18.016 22.1045 19.0031 21.9915C19.4739 21.9377 19.9158 21.735 20.2659 21.4123C21 20.7358 21 19.1875 21 16.0909Z" stroke="currentColor" stroke-width="1.5"></path>
+                                                        </svg>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td @click="selectMail(mail)" class="mail-time whitespace-nowrap font-medium ltr:text-right rtl:text-left" x-text="showTime(mail)"></td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+                </template>
+
+                <div class="screen_loader2 hide absolute inset-0 z-[60] grid place-content-center animate__animated hide" style="top: 8.3rem">
+                    <svg width="64" height="64" viewBox="0 0 135 135" xmlns="http://www.w3.org/2000/svg" fill="#4361ee">
+                        <path
+                            d="M67.447 58c5.523 0 10-4.477 10-10s-4.477-10-10-10-10 4.477-10 10 4.477 10 10 10zm9.448 9.447c0 5.523 4.477 10 10 10 5.522 0 10-4.477 10-10s-4.478-10-10-10c-5.523 0-10 4.477-10 10zm-9.448 9.448c-5.523 0-10 4.477-10 10 0 5.522 4.477 10 10 10s10-4.478 10-10c0-5.523-4.477-10-10-10zM58 67.447c0-5.523-4.477-10-10-10s-10 4.477-10 10 4.477 10 10 10 10-4.477 10-10z">
+                            <animateTransform attributeName="transform" type="rotate" from="0 67 67" to="-360 67 67" dur="2.5s"
+                                repeatCount="indefinite" />
+                        </path>
+                        <path
+                            d="M28.19 40.31c6.627 0 12-5.374 12-12 0-6.628-5.373-12-12-12-6.628 0-12 5.372-12 12 0 6.626 5.372 12 12 12zm30.72-19.825c4.686 4.687 12.284 4.687 16.97 0 4.686-4.686 4.686-12.284 0-16.97-4.686-4.687-12.284-4.687-16.97 0-4.687 4.686-4.687 12.284 0 16.97zm35.74 7.705c0 6.627 5.37 12 12 12 6.626 0 12-5.373 12-12 0-6.628-5.374-12-12-12-6.63 0-12 5.372-12 12zm19.822 30.72c-4.686 4.686-4.686 12.284 0 16.97 4.687 4.686 12.285 4.686 16.97 0 4.687-4.686 4.687-12.284 0-16.97-4.685-4.687-12.283-4.687-16.97 0zm-7.704 35.74c-6.627 0-12 5.37-12 12 0 6.626 5.373 12 12 12s12-5.374 12-12c0-6.63-5.373-12-12-12zm-30.72 19.822c-4.686-4.686-12.284-4.686-16.97 0-4.686 4.687-4.686 12.285 0 16.97 4.686 4.687 12.284 4.687 16.97 0 4.687-4.685 4.687-12.283 0-16.97zm-35.74-7.704c0-6.627-5.372-12-12-12-6.626 0-12 5.373-12 12s5.374 12 12 12c6.628 0 12-5.373 12-12zm-19.823-30.72c4.687-4.686 4.687-12.284 0-16.97-4.686-4.686-12.284-4.686-16.97 0-4.687 4.686-4.687 12.284 0 16.97 4.686 4.687 12.284 4.687 16.97 0z">
+                            <animateTransform attributeName="transform" type="rotate" from="0 67 67" to="360 67 67" dur="8s"
+                                repeatCount="indefinite" />
+                        </path>
+                    </svg>
+                </div>
+
+                <template x-if="!pagedMails.length">
+                    <div class="text-base grid place-content-center min-h-[300px] h-full no-select empty-mails">
+                        <script>$(".empty-mails").text(text('no_data'))</script>
+                    </div>
+                </template>
+
+            </div>
+
+            <template x-if="selectedMail && !isEdit">
+
+                <div>
+
+                    <div class="flex items-center justify-between p-4">
+
+                        <div class="flex items-center" style="max-width: 80%;">
+                            <button type="button" class="ltr:mr-4 rtl:ml-4 hover:text-primary" @click="selectedMail = null">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 rtl:rotate-180">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+                                </svg>
+                            </button>
+                            <h4 class="text-base md:text-lg font-medium ltr:mr-2 rtl:ml-2 mail-title" x-text="selectedMail.title" style="white-space: nowrap; overflow: hidden; cursor: default; text-overflow: ellipsis;"></h4>
+                            <div class="badge bg-info hover:top-0 no-select fix-lang" x-text="selectedMail.type == 'inbox' ? 'inbox' : 'send'"></div>
+                        </div>
+
+                    </div>
+
+                    <div class="h-px border-b border-[#e0e6ed] dark:border-[#1b2e4b]"></div>
+
+                    <div class="p-4 relative overflow-auto mails-content">
+
+                        <div class="flex flex-wrap no-select">
+                            <div class="flex-shrink-0 ltr:mr-2 rtl:ml-2">
+                                <img x-show="selectedMail.path" :src="`${selectedMail.path}`" class="h-12 w-12 rounded-full object-cover">
+                                <div x-show="!selectedMail.path" class="border border-gray-300 dark:border-gray-800 rounded-full p-3">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5">
+                                        <circle cx="12" cy="6" r="4" stroke="currentColor" stroke-width="1.5" />
+                                        <ellipse opacity="0.5" cx="12" cy="17" rx="7" ry="4" stroke="currentColor" stroke-width="1.5" />
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="ltr:mr-2 rtl:ml-2 flex-1">
+                                <div class="flex items-center">
+                                    <div class="text-lg ltr:mr-4 rtl:ml-4 whitespace-nowrap" x-text="selectedMail.name">
+                                    </div>
+                                    <div x-show="selectedMail.group" x-dynamictooltip="selectedMail.group" role="tooltip" class="ltr:mr-4 rtl:ml-4">
+                                        <div class="w-2 h-2 rounded-full" :class="{
+                                                    'bg-primary': selectedMail.group === 'personal',
+                                                    'bg-warning': selectedMail.group === 'work',
+                                                    'bg-success': selectedMail.group === 'social',
+                                                    'bg-danger': selectedMail.group === 'private',
+                                                }">
+                                        </div>
+                                    </div>
+                                    <div class="text-white-dark whitespace-nowrap" x-text="selectedMail.date"></div>
+                                </div>
+                                <div class="text-white-dark  flex items-center">
+                                    <div class="ltr:mr-1 rtl:ml-1" x-text="selectedMail.email">
+                                    </div>
+                                    <div x-data="dropdown" @click.outside="open = false" class="dropdown">
+                                        <button type="button" class="mt-1.5" @click="toggle" style="margin: -1px 0 0 .3rem;">
+
+                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5">
+                                                <path d="M19 9L12 15L5 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                                            </svg>
+                                        </button>
+                                        <ul x-cloak x-show="open" x-transition x-transition.duration.300ms class="ltr:left-0 rtl:right-0 sm:w-56">
+                                            <li>
+                                                <div class="flex items-center px-4 py-2">
+                                                    <div class="text-white-dark ltr:mr-2 rtl:ml-2 w-1/4" text="from"></div> :&nbsp;&nbsp;
+                                                    <div class="flex-1 fix-lang" x-text="selectedMail.type === 'send' ? 'me' : selectedMail.email">
+                                                    </div>
+                                                </div>
+                                            </li>
+                                            <li>
+                                                <div class="flex items-center px-4 py-2">
+                                                    <div class="text-white-dark ltr:mr-2 rtl:ml-2 w-1/4" text="to"></div> :&nbsp;&nbsp;
+                                                    <div class="flex-1 fix-lang" x-text="selectedMail.type !== 'send' ? 'me' : '{{user.email}}' == selectedMail.email ? 'me' : selectedMail.email">
+                                                    </div>
+                                                </div>
+                                            </li>
+                                            <li>
+                                                <div class="flex items-center px-4 py-2">
+                                                    <div class="text-white-dark ltr:mr-2 rtl:ml-2 w-1/4" text="date"></div> :&nbsp;&nbsp;
+                                                    <div class="flex-1" x-text="selectedMail.date">
+                                                    </div>
+                                                </div>
+                                            </li>
+                                            <li>
+                                                <div class="flex items-center px-4 py-2" style="align-items: flex-start;">
+                                                    <div class="text-white-dark ltr:mr-2 rtl:ml-2 w-1/4" text="title"></div> :&nbsp;&nbsp;
+                                                    <div class="flex-1" x-text="selectedMail.title"></div>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex items-center justify-between space-x-3 rtl:space-x-reverse" style="width: 3.5rem">
+                                    <button data-placement="top" role="tooltip" type="button" class="enabled:hover:text-warning disabled:opacity-60" :class="{ 'text-warning': selectedMail.isStar }" @click="setStar(selectedMail.id)" :disabled="selectedTab === 'trash'">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" :class="{ 'fill-warning': selectedMail.isStar }">
+                                            <path d="M9.15316 5.40838C10.4198 3.13613 11.0531 2 12 2C12.9469 2 13.5802 3.13612 14.8468 5.40837L15.1745 5.99623C15.5345 6.64193 15.7144 6.96479 15.9951 7.17781C16.2757 7.39083 16.6251 7.4699 17.3241 7.62805L17.9605 7.77203C20.4201 8.32856 21.65 8.60682 21.9426 9.54773C22.2352 10.4886 21.3968 11.4691 19.7199 13.4299L19.2861 13.9372C18.8096 14.4944 18.5713 14.773 18.4641 15.1177C18.357 15.4624 18.393 15.8341 18.465 16.5776L18.5306 17.2544C18.7841 19.8706 18.9109 21.1787 18.1449 21.7602C17.3788 22.3417 16.2273 21.8115 13.9243 20.7512L13.3285 20.4768C12.6741 20.1755 12.3469 20.0248 12 20.0248C11.6531 20.0248 11.3259 20.1755 10.6715 20.4768L10.0757 20.7512C7.77268 21.8115 6.62118 22.3417 5.85515 21.7602C5.08912 21.1787 5.21588 19.8706 5.4694 17.2544L5.53498 16.5776C5.60703 15.8341 5.64305 15.4624 5.53586 15.1177C5.42868 14.773 5.19043 14.4944 4.71392 13.9372L4.2801 13.4299C2.60325 11.4691 1.76482 10.4886 2.05742 9.54773C2.35002 8.60682 3.57986 8.32856 6.03954 7.77203L6.67589 7.62805C7.37485 7.4699 7.72433 7.39083 8.00494 7.17781C8.28555 6.96479 8.46553 6.64194 8.82547 5.99623L9.15316 5.40838Z" stroke="currentColor" stroke-width="1.5" />
+                                        </svg>
+                                    </button>
+                                    <button data-placement="top" role="tooltip" type="button" class="enabled:hover:text-primary disabled:opacity-60" :class="{ 'text-primary': selectedMail.isImportant }" @click="setImportant(selectedMail.id)" :disabled="selectedTab === 'trash'">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-4.5 h-4.5 rotate-90" :class="{ 'fill-primary': selectedMail.isImportant }">
+                                            <path d="M21 16.0909V11.0975C21 6.80891 21 4.6646 19.682 3.3323C18.364 2 16.2426 2 12 2C7.75736 2 5.63604 2 4.31802 3.3323C3 4.6646 3 6.80891 3 11.0975V16.0909C3 19.1875 3 20.7358 3.73411 21.4123C4.08421 21.735 4.52615 21.9377 4.99692 21.9915C5.98402 22.1045 7.13673 21.0849 9.44216 19.0458C10.4612 18.1445 10.9708 17.6938 11.5603 17.5751C11.8506 17.5166 12.1494 17.5166 12.4397 17.5751C13.0292 17.6938 13.5388 18.1445 14.5578 19.0458C16.8633 21.0849 18.016 22.1045 19.0031 21.9915C19.4739 21.9377 19.9158 21.735 20.2659 21.4123C21 20.7358 21 19.1875 21 16.0909Z" stroke="currentColor" stroke-width="1.5"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-8 prose dark:prose-p:text-white prose-p:text-sm md:prose-p:text-sm max-w-full prose-img:inline-block prose-img:m-0 mail-description default" x-html="selectedMail.description"></div>
+
+                        <script>
+                            setTimeout( _ => {
+                                $(".mail-description").find("p").each(function(){
+                                    $(this).find("a").addClass("text-primary underline font-semibold hover:no-underline pointer");
+                                });
+                                $(".mails-content").css({"height": $(".mailbox").height() - 70});
+                            });
+                        </script>
+
+                        <div class="mt-8 mail-attachments no-select" x-show="selectedMail.attachments">
+                            
+                            <div class="h-px border-b border-[#e0e6ed] dark:border-[#1b2e4b]"></div>
+                            <div class="text-base mt-5" text="attachements"></div>
+                            <div class="flex items-center flex-wrap mt-4">
+                                <template x-for="attachment in selectedMail.attachments">
+                                    <a x-bind:href="'/static/media/mail/' + attachment.link" download class=" flex items-center ltr:mr-4 rtl:ml-4 mb-4 border border-[#e0e6ed] dark:border-[#1b2e4b] rounded-md hover:text-primary hover:border-primary transition-all duration-300 px-4 py-2.5 relative group">
+                                        <template x-if="attachment.type === 'image'">
+                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5">
+                                                <path d="M2 12C2 7.28595 2 4.92893 3.46447 3.46447C4.92893 2 7.28595 2 12 2C16.714 2 19.0711 2 20.5355 3.46447C22 4.92893 22 7.28595 22 12C22 16.714 22 19.0711 20.5355 20.5355C19.0711 22 16.714 22 12 22C7.28595 22 4.92893 22 3.46447 20.5355C2 19.0711 2 16.714 2 12Z" stroke="currentColor" stroke-width="1.5" />
+                                                <circle opacity="0.5" cx="16" cy="8" r="2" stroke="currentColor" stroke-width="1.5" />
+                                                <path opacity="0.5" d="M2 12.5001L3.75159 10.9675C4.66286 10.1702 6.03628 10.2159 6.89249 11.0721L11.1822 15.3618C11.8694 16.0491 12.9512 16.1428 13.7464 15.5839L14.0446 15.3744C15.1888 14.5702 16.7369 14.6634 17.7765 15.599L21 18.5001" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                                            </svg>
+                                        </template>
+                                        <template x-if="attachment.type === 'folder'">
+                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5">
+                                                <path opacity="0.5" d="M18 10L13 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                                                <path d="M2 6.94975C2 6.06722 2 5.62595 2.06935 5.25839C2.37464 3.64031 3.64031 2.37464 5.25839 2.06935C5.62595 2 6.06722 2 6.94975 2C7.33642 2 7.52976 2 7.71557 2.01738C8.51665 2.09229 9.27652 2.40704 9.89594 2.92051C10.0396 3.03961 10.1763 3.17633 10.4497 3.44975L11 4C11.8158 4.81578 12.2237 5.22367 12.7121 5.49543C12.9804 5.64471 13.2651 5.7626 13.5604 5.84678C14.0979 6 14.6747 6 15.8284 6H16.2021C18.8345 6 20.1506 6 21.0062 6.76946C21.0849 6.84024 21.1598 6.91514 21.2305 6.99383C22 7.84935 22 9.16554 22 11.7979V14C22 17.7712 22 19.6569 20.8284 20.8284C19.6569 22 17.7712 22 14 22H10C6.22876 22 4.34315 22 3.17157 20.8284C2 19.6569 2 17.7712 2 14V6.94975Z" stroke="currentColor" stroke-width="1.5" />
+                                            </svg>
+                                        </template>
+                                        <template x-if="attachment.type === 'zip'">
+                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5">
+                                                <path d="M9.5 15.5V15.375C9.5 14.8918 9.89175 14.5 10.375 14.5H13.625C14.1082 14.5 14.5 14.8918 14.5 15.375V15.5C14.5 16.8807 13.3807 18 12 18C10.6193 18 9.5 16.8807 9.5 15.5Z" stroke="#8E93A6" stroke-width="1.5" stroke-linecap="round" />
+                                                <path d="M9.5 3C9.5 2.5286 9.5 2.29289 9.64645 2.14645C9.79289 2 10.0286 2 10.5 2H11C11.4714 2 11.7071 2 11.8536 2.14645C12 2.29289 12 2.5286 12 3V3.5C12 3.9714 12 4.20711 11.8536 4.35355C11.7071 4.5 11.4714 4.5 11 4.5H10.5C10.0286 4.5 9.79289 4.5 9.64645 4.35355C9.5 4.20711 9.5 3.9714 9.5 3.5V3Z" stroke="#8E93A6" stroke-width="1.5" />
+                                                <path d="M9.5 8C9.5 7.5286 9.5 7.29289 9.64645 7.14645C9.79289 7 10.0286 7 10.5 7H11C11.4714 7 11.7071 7 11.8536 7.14645C12 7.29289 12 7.5286 12 8V8.5C12 8.9714 12 9.20711 11.8536 9.35355C11.7071 9.5 11.4714 9.5 11 9.5H10.5C10.0286 9.5 9.79289 9.5 9.64645 9.35355C9.5 9.20711 9.5 8.9714 9.5 8.5V8Z" stroke="#8E93A6" stroke-width="1.5" />
+                                                <path d="M12 5.5C12 5.0286 12 4.79289 12.1464 4.64645C12.2929 4.5 12.5286 4.5 13 4.5H13.5C13.9714 4.5 14.2071 4.5 14.3536 4.64645C14.5 4.79289 14.5 5.0286 14.5 5.5V6C14.5 6.4714 14.5 6.70711 14.3536 6.85355C14.2071 7 13.9714 7 13.5 7H13C12.5286 7 12.2929 7 12.1464 6.85355C12 6.70711 12 6.4714 12 6V5.5Z" stroke="#8E93A6" stroke-width="1.5" />
+                                                <path d="M12 10.5C12 10.0286 12 9.79289 12.1464 9.64645C12.2929 9.5 12.5286 9.5 13 9.5H13.5C13.9714 9.5 14.2071 9.5 14.3536 9.64645C14.5 9.79289 14.5 10.0286 14.5 10.5V11C14.5 11.4714 14.5 11.7071 14.3536 11.8536C14.2071 12 13.9714 12 13.5 12H13C12.5286 12 12.2929 12 12.1464 11.8536C12 11.7071 12 11.4714 12 11V10.5Z" stroke="#8E93A6" stroke-width="1.5" />
+                                                <path d="M3 10C3 6.22876 3 4.34315 4.17157 3.17157C5.34315 2 7.22876 2 11 2H13C16.7712 2 18.6569 2 19.8284 3.17157C21 4.34315 21 6.22876 21 10V14C21 17.7712 21 19.6569 19.8284 20.8284C18.6569 22 16.7712 22 13 22H11C7.22876 22 5.34315 22 4.17157 20.8284C3 19.6569 3 17.7712 3 14V10Z" stroke="currentColor" stroke-width="1.5" />
+                                            </svg>
+                                        </template>
+                                        <template x-if="attachment.type !== 'zip' && attachment.type !== 'image' && attachment.type !== 'folder'">
+                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5">
+                                                <path d="M15.3929 4.05365L14.8912 4.61112L15.3929 4.05365ZM19.3517 7.61654L18.85 8.17402L19.3517 7.61654ZM21.654 10.1541L20.9689 10.4592V10.4592L21.654 10.1541ZM3.17157 20.8284L3.7019 20.2981H3.7019L3.17157 20.8284ZM20.8284 20.8284L20.2981 20.2981L20.2981 20.2981L20.8284 20.8284ZM14 21.25H10V22.75H14V21.25ZM2.75 14V10H1.25V14H2.75ZM21.25 13.5629V14H22.75V13.5629H21.25ZM14.8912 4.61112L18.85 8.17402L19.8534 7.05907L15.8947 3.49618L14.8912 4.61112ZM22.75 13.5629C22.75 11.8745 22.7651 10.8055 22.3391 9.84897L20.9689 10.4592C21.2349 11.0565 21.25 11.742 21.25 13.5629H22.75ZM18.85 8.17402C20.2034 9.3921 20.7029 9.86199 20.9689 10.4592L22.3391 9.84897C21.9131 8.89241 21.1084 8.18853 19.8534 7.05907L18.85 8.17402ZM10.0298 2.75C11.6116 2.75 12.2085 2.76158 12.7405 2.96573L13.2779 1.5653C12.4261 1.23842 11.498 1.25 10.0298 1.25V2.75ZM15.8947 3.49618C14.8087 2.51878 14.1297 1.89214 13.2779 1.5653L12.7405 2.96573C13.2727 3.16993 13.7215 3.55836 14.8912 4.61112L15.8947 3.49618ZM10 21.25C8.09318 21.25 6.73851 21.2484 5.71085 21.1102C4.70476 20.975 4.12511 20.7213 3.7019 20.2981L2.64124 21.3588C3.38961 22.1071 4.33855 22.4392 5.51098 22.5969C6.66182 22.7516 8.13558 22.75 10 22.75V21.25ZM1.25 14C1.25 15.8644 1.24841 17.3382 1.40313 18.489C1.56076 19.6614 1.89288 20.6104 2.64124 21.3588L3.7019 20.2981C3.27869 19.8749 3.02502 19.2952 2.88976 18.2892C2.75159 17.2615 2.75 15.9068 2.75 14H1.25ZM14 22.75C15.8644 22.75 17.3382 22.7516 18.489 22.5969C19.6614 22.4392 20.6104 22.1071 21.3588 21.3588L20.2981 20.2981C19.8749 20.7213 19.2952 20.975 18.2892 21.1102C17.2615 21.2484 15.9068 21.25 14 21.25V22.75ZM21.25 14C21.25 15.9068 21.2484 17.2615 21.1102 18.2892C20.975 19.2952 20.7213 19.8749 20.2981 20.2981L21.3588 21.3588C22.1071 20.6104 22.4392 19.6614 22.5969 18.489C22.7516 17.3382 22.75 15.8644 22.75 14H21.25ZM2.75 10C2.75 8.09318 2.75159 6.73851 2.88976 5.71085C3.02502 4.70476 3.27869 4.12511 3.7019 3.7019L2.64124 2.64124C1.89288 3.38961 1.56076 4.33855 1.40313 5.51098C1.24841 6.66182 1.25 8.13558 1.25 10H2.75ZM10.0298 1.25C8.15538 1.25 6.67442 1.24842 5.51887 1.40307C4.34232 1.56054 3.39019 1.8923 2.64124 2.64124L3.7019 3.7019C4.12453 3.27928 4.70596 3.02525 5.71785 2.88982C6.75075 2.75158 8.11311 2.75 10.0298 2.75V1.25Z" fill="currentColor" />
+                                                <path opacity="0.5" d="M6 14.5H14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                                                <path opacity="0.5" d="M6 18H11.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                                                <path opacity="0.5" d="M13 2.5V5C13 7.35702 13 8.53553 13.7322 9.26777C14.4645 10 15.643 10 18 10H22" stroke="currentColor" stroke-width="1.5" />
+                                            </svg>
+                                        </template>
+                                        <div class="ltr:ml-3 rtl:mr-3">
+                                            <p class="text-xs text-primary font-semibold" x-text="attachment.name"></p>
+                                            <p class="text-[11px] text-gray-400 dark:text-gray-600 text-left" x-text="attachment.size"></p>
+                                        </div>
+                                        <div class="bg-dark-light/40 z-[5] w-full h-full absolute ltr:left-0 rtl:right-0 top-0 rounded-md hidden group-hover:block">
+                                        </div>
+                                        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full p-1 btn btn-primary hidden group-hover:block z-10">
+                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5">
+                                                <path opacity="0.5" d="M3 15C3 17.8284 3 19.2426 3.87868 20.1213C4.75736 21 6.17157 21 9 21H15C17.8284 21 19.2426 21 20.1213 20.1213C21 19.2426 21 17.8284 21 15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                                                <path d="M12 3V16M12 16L16 11.625M12 16L8 11.625" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                                            </svg>
+                                        </div>
+                                    </a>
+                                </template>
+                                <script>
+                                    setTimeout( _ => {
+                                        if ( !$(".mail-attachments a").length ) $(".mail-attachments").hide();
+                                    });
+                                </script>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </template>
+
+            <template x-if="isEdit">
+
+                <div class="relative mail-send-msg no-select" style="max-height: 100%;">
+
+                    <div class="py-4 px-6 flex items-center">
+
+                        <h4 class="text-lg text-gray-600 dark:text-gray-400 font-medium" text="new_msg"></h4>
+
+                    </div>
+
+                    <div class="h-px border-b border-[#e0e6ed] dark:border-[#1b2e4b]"></div>
+
+                    <form class="p-6 grid gap-6 send-msg-form overflow-auto">
+
+                        <div class="flex justify-between items-center">
+
+                            <select id="send-to" name="send-to" class="form-select flex-1">
+                                <option value="{{ user.id }}" text="your_self"></option>
+                                {% for ch in users %}
+                                    {% if user.id != ch.id %}
+                                        <option value="{{ ch.id }}">{{ ch.name|value }}</option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+
+                            <input type="text" class="form-input" text="title" name="title">
+
+                        </div>
+
+                        <div class="h-fit">
+                            <div class="editor-text"></div>
+                        </div>
+
+                        <div class="file-inputs">
+                            <input type="file" class="form-input file:py-2 file:px-4 file:border-0 file:font-semibold p-0 file:bg-primary/90 ltr:file:mr-5 rtl:file:ml-5 file:text-white file:hover:bg-primary" multiple="multiple">
+                        </div>
+
+                        <div class="flex items-center ltr:ml-auto rtl:mr-auto mt-6 buttons">
+                            <button type="button" class="btn btn-outline-danger ltr:mr-3 rtl:ml-3" @click="closeMsgPopUp" text="cancel"></button>
+                            <button type="button" class="btn btn-primary send-btn" @click="saveMail" text="send"></button>
+                        </div>
+
+                        <script>
+
+                            setTimeout( _ => {
+                                $(".send-msg-form .file-inputs").on("change", "input", function(){
+                                    if ( $(".send-msg-form .file-inputs").find("input").last()[0] == this )
+                                    $(".send-msg-form .file-inputs").append(`
+                                        <input type="file" class="form-input file:py-2 file:px-4 file:border-0 file:font-semibold p-0 file:bg-primary/90 ltr:file:mr-5 rtl:file:ml-5 file:text-white file:hover:bg-primary mt-5" multiple="multiple">
+                                    `);
+                                    $(".send-msg-form")[0].scrollBy(0, 1000);
+                                });
+                            }, 100);
+
+                            if ( $(window).width() < 640 ) {
+                                $(".mailbox .send-msg-form .buttons").css({"margin-top": ".9rem"});
+                            }
+
+                            $(".send-msg-form").css({"height": $(".mailbox").height() - 70, "scroll-behavior": "smooth"});
+                            $(".send-msg-form .editor-text").css({"height": $(".mailbox").height() - 400});
+
+                        </script>
+
+                    </form>
+
+                    <div class="screen_loader2 hide absolute inset-0 z-[60] grid place-content-center animate__animated hide">
+                        <svg width="64" height="64" viewBox="0 0 135 135" xmlns="http://www.w3.org/2000/svg" fill="#4361ee">
+                            <path
+                                d="M67.447 58c5.523 0 10-4.477 10-10s-4.477-10-10-10-10 4.477-10 10 4.477 10 10 10zm9.448 9.447c0 5.523 4.477 10 10 10 5.522 0 10-4.477 10-10s-4.478-10-10-10c-5.523 0-10 4.477-10 10zm-9.448 9.448c-5.523 0-10 4.477-10 10 0 5.522 4.477 10 10 10s10-4.478 10-10c0-5.523-4.477-10-10-10zM58 67.447c0-5.523-4.477-10-10-10s-10 4.477-10 10 4.477 10 10 10 10-4.477 10-10z">
+                                <animateTransform attributeName="transform" type="rotate" from="0 67 67" to="-360 67 67" dur="2.5s"
+                                    repeatCount="indefinite" />
+                            </path>
+                            <path
+                                d="M28.19 40.31c6.627 0 12-5.374 12-12 0-6.628-5.373-12-12-12-6.628 0-12 5.372-12 12 0 6.626 5.372 12 12 12zm30.72-19.825c4.686 4.687 12.284 4.687 16.97 0 4.686-4.686 4.686-12.284 0-16.97-4.686-4.687-12.284-4.687-16.97 0-4.687 4.686-4.687 12.284 0 16.97zm35.74 7.705c0 6.627 5.37 12 12 12 6.626 0 12-5.373 12-12 0-6.628-5.374-12-12-12-6.63 0-12 5.372-12 12zm19.822 30.72c-4.686 4.686-4.686 12.284 0 16.97 4.687 4.686 12.285 4.686 16.97 0 4.687-4.686 4.687-12.284 0-16.97-4.685-4.687-12.283-4.687-16.97 0zm-7.704 35.74c-6.627 0-12 5.37-12 12 0 6.626 5.373 12 12 12s12-5.374 12-12c0-6.63-5.373-12-12-12zm-30.72 19.822c-4.686-4.686-12.284-4.686-16.97 0-4.686 4.687-4.686 12.285 0 16.97 4.686 4.687 12.284 4.687 16.97 0 4.687-4.685 4.687-12.283 0-16.97zm-35.74-7.704c0-6.627-5.372-12-12-12-6.626 0-12 5.373-12 12s5.374 12 12 12c6.628 0 12-5.373 12-12zm-19.823-30.72c4.687-4.686 4.687-12.284 0-16.97-4.686-4.686-12.284-4.686-16.97 0-4.687 4.686-4.687 12.284 0 16.97 4.686 4.687 12.284 4.687 16.97 0z">
+                                <animateTransform attributeName="transform" type="rotate" from="0 67 67" to="360 67 67" dur="8s"
+                                    repeatCount="indefinite" />
+                            </path>
+                        </svg>
+                    </div>
+                    
+                </div>
+
+            </template>
+
+        </div>
+
+    </div>
+
+    {{ mails|json_script:"mail-list" }}
+
+{% endblock %}
+
+{% block script %}
+
+    <script>
+        
+        let mail_list = [];
+        
+        JSON.parse(JSON.parse($("#mail-list").text())).forEach(item => {
+
+            let files = [];
+
+            item.files.forEach(f => {
+
+                files.push({
+                    "id": f.id, "name": f.name, "type": f.type,
+                    "size": f.size, "link": f.link,
+                });
+
+            });
+
+            mail_list.push({
+                id: item.id,
+                path: `/static/media/user/${item.admin_image}`,
+                role: "",
+                image: `/static/media/user/${item.admin_image}`,
+                name: item.admin_name,
+                email: item.admin_mail,
+                date: item.date.split(" ")[0],
+                time: item.date.split(" ")[1].split(":").slice(0, 2).join(":"),
+                datetime: item.date,
+                title: item.title,
+                displayDescription: item.display_text,
+                type: item.type,
+                isImportant: item.important,
+                isStar: item.star,
+                isUnread: !item.active,
+                group: 'social',
+                attachments: files,
+                description: item.description,
+            });
+        
+        });
+
+        document.addEventListener("alpine:init", () => {
+
+            Alpine.data("mailbox", () => ({
+
+                defaultData: {
+                    id: null,
+                    from: 'bioherb@mail.com',
+                    to: '',
+                    cc: '',
+                    title: '',
+                    file: null,
+                    description: ''
+                },
+                quillEditor: null,
+                isShowMailMenu: false,
+                isEdit: false,
+                selectedTab: 'inbox',
+                prevTab: '',
+                filteredMailList: [],
+                ids: [],
+                p: text('am'),
+                searchText: '',
+                selectedMail: null,
+                params: this.defaultData,
+                mailList: mail_list,
+                pager: {
+                    currentPage: 1,
+                    totalPages: 0,
+                    pageSize: 10,
+                    startIndex: 0,
+                    endIndex: 0,
+                },
+                pagedMails: [],
+
+                checkAllCheckbox() {
+                    if (this.filteredMailList.length && this.ids.length === this.filteredMailList.length) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                },
+
+                showTime(item) {
+                    const displayDt = new Date(item.date);
+                    const cDt = new Date();
+                    if (displayDt.toDateString() === cDt.toDateString()) {
+                        hours = item.time.split(" ")[0].split(":")[0];
+                        if ( hours > 12 ) { hours -= 12; this.p = text('pm'); }
+                        minutes = item.time.split(" ")[0].split(":")[1];
+                        return `${hours}:${minutes} ${this.p}`;
+                    } else {
+                        if (displayDt.getFullYear() === cDt.getFullYear()) {
+                            var monthNames = get_date("month_list");
+                            let day = String(displayDt.getDate());
+                            return day + ' ' + monthNames[displayDt.getMonth()].padStart(2, '0');
+                        } else {
+                            let full_date = displayDt.getFullYear() + '/' + String(displayDt.getDate()) + '/' + String(displayDt.getMonth() + 1)
+                        }
+                    }
+                },
+
+                checkAll(isChecked) {
+                    if (isChecked) {
+                        this.ids = this.filteredMailList.map((d) => {
+                            return d.id;
+                        });
+                    } else {
+                        this.clearSelection();
+                    }
+                },
+
+                init() {
+                    this.searchMails();
+                },
+
+                searchMails(isResetPage = true) {
+
+                    if (isResetPage) {
+                        this.pager.currentPage = 1;
+                    }
+
+                    let res;
+                    if (this.selectedTab === 'important') {
+                        res = this.mailList.filter((d) => d.isImportant);
+                    } else if (this.selectedTab === 'star') {
+                        res = this.mailList.filter((d) => d.isStar);
+                    } else if (this.selectedTab === 'personal' || this.selectedTab === 'work' || this
+                        .selectedTab === 'social' || this.selectedTab === 'private') {
+                        res = this.mailList.filter((d) => d.group === this.selectedTab);
+                    } else {
+                        res = this.mailList.filter((d) => d.type === this.selectedTab);
+                    }
+                    this.filteredMailList = res.filter(
+                        (d) =>
+                        (d.title.toLowerCase().trim().replace(/\s/gi, "").includes(this.searchText.trim().toLowerCase().replace(/\s/gi, ""))) ||
+                        (d.name.toLowerCase().trim().replace(/\s/gi, "").includes(this.searchText.trim().toLowerCase().replace(/\s/gi, ""))) ||
+                        (d.datetime.toLowerCase().trim().replace(/\s/gi, "").includes(this.searchText.trim().toLowerCase().replace(/\s/gi, ""))) ||
+                        (d.displayDescription.trim().toLowerCase().replace(/\s/gi, "").includes(this.searchText.trim().toLowerCase().replace(/\s/gi, ""))) 
+                    );
+                    if (this.filteredMailList.length) {
+                        this.pager.totalPages = this.pager.pageSize < 1 ? 1 : Math.ceil(this
+                            .filteredMailList.length / this.pager.pageSize);
+                        if (this.pager.currentPage > this.pager.totalPages) {
+                            this.pager.currentPage = 1;
+                        }
+                        this.pager.startIndex = (this.pager.currentPage - 1) * this.pager.pageSize;
+                        this.pager.endIndex = Math.min(this.pager.startIndex + this.pager.pageSize - 1,
+                            this.filteredMailList.length - 1);
+                        this.pagedMails = this.filteredMailList.slice(this.pager.startIndex, this.pager
+                            .endIndex + 1);
+                    }
+                    else {
+                        this.pagedMails = [];
+                        this.pager.startIndex = -1;
+                        this.pager.endIndex = -1;
+                    }
+                    this.clearSelection();
+                    set_text();
+                },
+
+                clearSelection() {
+                    this.ids = [];
+                },
+
+                tabChanged(tabType) {
+                    this.isEdit = false;
+                    this.prevTab = this.selectedTab;
+                    this.selectedTab = tabType;
+                    this.isShowMailMenu = false;
+                    this.selectedMail = null;
+                    this.searchMails();
+                    this.reload();
+                },
+
+                setImportant(mailId) {
+
+                    if (mailId) {
+                        let item = this.filteredMailList.find((d) => d.id === mailId);
+                        item.isImportant = !item.isImportant;
+                        setTimeout(() => { this.searchMails(false); });
+                        $(".screen_loader2").css({"display": "flex"});
+                        $.ajax({
+                            url: "", method: "post", data: {"mail_id": mailId, "set": item.isImportant},
+                            headers: {"X-XSRF-TOKEN": get_cookie("XSRF-TOKEN"), "request": "set_important"},
+                            success: (data) => {
+                                this.reload();
+                            },
+                            error: (data) => {}
+                        });
+                    }
+
+                },
+
+                setStar(mailId) {
+                    
+                    if (mailId) {
+                        let item = this.filteredMailList.find((d) => d.id === mailId);
+                        item.isStar = !item.isStar;
+                        setTimeout(() => { this.searchMails(false); });
+                        $(".screen_loader2").css({"display": "flex"});
+                        $.ajax({
+                            url: "", method: "post", data: {"mail_id": mailId, "set": item.isStar},
+                            headers: {"X-XSRF-TOKEN": get_cookie("XSRF-TOKEN"), "request": "set_star"},
+                            success: (data) => {
+                                this.reload();
+                            },
+                            error: (data) => {}
+                        });
+                    }
+                    
+                },
+
+                refreshMails() {
+                    this.search_mail = '';
+                    this.searchMails(false);
+                },
+                
+                setSpam() {
+                    if (this.ids.length) {
+                        let items = this.filteredMailList.filter((d) => this.ids.includes(d.id));
+                        for (let item of items) {
+                            item.type = item.type === 'spam' ? 'inbox' : 'spam';
+                        }
+                        if (this.selectedTab == 'spam') {
+                            this.showMessage(this.ids.length + ' Mail has been removed from Spam.');
+                        } else {
+                            this.showMessage(this.ids.length + ' Mail has been added to Spam.');
+                        }
+                        this.searchMails(false);
+                    }
+                },
+
+                setArchive() {
+                    if (this.ids.length) {
+                        let items = this.filteredMailList.filter((d) => this.ids.includes(d.id));
+                        for (let item of items) {
+                            item.type = item.type === 'archive' ? 'inbox' : 'archive';
+                        }
+                        if (this.selectedTab == 'archive') {
+                            this.showMessage(this.ids.length + ' Mail has been removed from Archive.');
+                        } else {
+                            this.showMessage(this.ids.length + ' Mail has been added to Archive.');
+                        }
+                        this.searchMails(false);
+                    }
+                },
+
+                setGroup(group) {
+                    ;
+                },
+
+                setAction(type) {
+                    
+                    if (this.ids.length) {
+                        const totalSelected = this.ids.length;
+                        let items = this.filteredMailList.filter((d) => this.ids.includes(d.id));
+                        let ids = [];
+                        for (let item of items) { ids.push(item.id); item.isUnread = type == "read" ? false: true; this.searchMails(false); }
+                        $(".screen_loader2").css({"display": "flex"});
+                        $.ajax({
+                            url: "", method: "post", data: {"ids": JSON.stringify(ids)},
+                            headers: {"X-XSRF-TOKEN": get_cookie("XSRF-TOKEN"), "request": `mail_${type}`},
+                            success: (data) => { this.reload(); },
+                            error: (data) => {}
+                        });
+                    }
+
+                },
+
+                removeMail() {
+                    
+                    if (this.ids.length) {
+                        if ( ! confirm(`${text('ask_delete')} ( ${this.ids.length} ) ${text('items')}`) ) return;
+                        const totalSelected = this.ids.length;
+                        let items = this.filteredMailList.filter((d) => this.ids.includes(d.id));
+                        let ids = [];
+                        for (let item of items) { ids.push(item.id); item.type = "trash"; this.searchMails(false); }
+                        $(".screen_loader2").css({"display": "flex"});
+                        $.ajax({
+                            url: "", method: "post", data: {"ids": JSON.stringify(ids)},
+                            headers: {"X-XSRF-TOKEN": get_cookie("XSRF-TOKEN"), "request": "remove"},
+                            success: (data) => { $(".screen_loader2").fadeOut(300); },
+                            error: (data) => {}
+                        });
+                    }
+
+                },
+
+                reload() {
+                    
+                    $(".screen_loader2").css({"display": "flex"});
+                    $.ajax({
+                        url: "", method: "post", data: {},
+                        headers: {"X-XSRF-TOKEN": get_cookie("XSRF-TOKEN"), "request": "get_mails"},
+                        success: (data) => {
+                            
+                            if ( !data.status ) return;
+
+                            mail_list = [];
+
+                            JSON.parse(data.mails).forEach(item => {
+
+                                let files = [];
+
+                                item.files.forEach(f => {
+
+                                    files.push({
+                                        "id": f.id, "name": f.name, "type": f.type,
+                                        "size": f.size, "link": f.link,
+                                    });
+
+                                });
+
+                                mail_list.push({
+                                    id: item.id,
+                                    path: `/static/media/user/${item.admin_image}`,
+                                    role: "",
+                                    image: `/static/media/user/${item.admin_image}`,
+                                    name: item.admin_name,
+                                    email: item.admin_mail,
+                                    date: item.date.split(" ")[0],
+                                    time: item.date.split(" ")[1].split(":").slice(0, 2).join(":"),
+                                    datetime: item.date,
+                                    title: item.title,
+                                    displayDescription: item.display_text,
+                                    type: item.type,
+                                    isImportant: item.important,
+                                    isStar: item.star,
+                                    isUnread: !item.active,
+                                    group: 'social',
+                                    attachments: files,
+                                    description: item.description,
+                                });
+                            
+                            });
+
+                            this.mailList = mail_list;
+                            this.searchMails(false);
+                            $(".screen_loader2").fadeOut(300);
+
+                        },
+                        error: (data) => {}
+                    });
+
+                },
+
+                sendMail() {
+
+                    let form = new FormData();
+                    let id_ = $(".send-msg-form select[name='send-to']").val() || 0;
+                    let title_ = $(".send-msg-form input[name='title']").val();
+                    let description_ = $(".send-msg-form .editor-text div").html();
+                    let display_text_ = $(".send-msg-form .editor-text div").text();
+                    form.append("id", id_);
+                    form.append("title", title_);
+                    form.append("description", description_);
+                    form.append("display_text", display_text_);
+                    let file_num = 0;
+                    $(".mail-send-msg").css("overflow", "hidden");
+                    $(".send-msg-form .file-inputs").find("input").each(function(){
+                        if ( !this.value ) return;
+                        for ( let ch = 0; ch < this.files.length; ch++ ) {
+                            form.append(`file_${file_num + ch}`, this.files[ch]);
+                            name = file_information(this.files[ch], "name");
+                            type = file_information(this.files[ch], "type");
+                            size = file_information(this.files[ch], "size");
+                            ext = file_information(this.files[ch], "ext");
+                            form.append(`file_${file_num + ch}_ext`, ext);
+                            form.append(`file_${file_num + ch}_name`, name);
+                            form.append(`file_${file_num + ch}_type`, type);
+                            form.append(`file_${file_num + ch}_size`, size);
+                        }
+                        file_num += this.files.length
+                    });
+                    form.append("file_num", file_num);
+
+                    $.ajax({
+                        url: "", method: "post", processData: false, contentType: false, data: form,
+                        headers: {"X-XSRF-TOKEN": get_cookie("XSRF-TOKEN"), "request": "send_mail"},
+                        success: (data) => {
+
+                            if ( data.status ) {
+
+                                show_msg(text('success_mail'));
+                                this.reload();
+                                this.isEdit = false;
+                                this.selectedTab = "send";
+                                this.searchMails();
+                            }
+
+                        },
+                        error: (data) => {
+
+                            show_msg(text('error_msg'), "error");
+
+                        }
+                    });
+
+                },
+                
+                saveMail() {
+
+                    $(".screen_loader2").css({"display": "flex"});
+                    this.sendMail();
+
+                },
+
+                getFileSize(file_type) {
+                    let type = 'file';
+                    if (file_type.includes('image/')) {
+                        type = 'image';
+                    } else if (file_type.includes('application/x-zip')) {
+                        type = 'zip';
+                    }
+                    return type;
+                },
+                
+                getFileType(total_bytes) {
+                    let size = '';
+                    if (total_bytes < 1000000) {
+                        size = Math.floor(total_bytes / 1000) + 'KB';
+                    } else {
+                        size = Math.floor(total_bytes / 1000000) + 'MB';
+                    }
+                    return size;
+                },
+
+                selectMail(item) {
+                    if (item) {
+                        if (item.type != 'draft') {
+                            if (item && item.isUnread) {
+                                item.isUnread = false;
+                            }
+                            this.selectedMail = item;
+                            $.ajax({
+                                url: "", method: "post", data:{"mail_id": item.id},
+                                headers: {"X-XSRF-TOKEN": get_cookie("XSRF-TOKEN"), "request": "seen"},
+                                success: (data) => {},
+                                error: (data) => {}
+                            });
+                        } else {
+                            this.openMail('draft', item);
+                        }
+                    } else {
+                        this.selectedMail = '';
+                    }
+                    setTimeout(set_text);
+                },
+
+                openMail(item) {
+                    this.prevTab = this.selectedTab;
+                    if (!this.isEdit) setTimeout(() => { text_editor($(".editor-text")[0], $(this).attr("height")); });
+                    this.isShowMailMenu = false;
+                    if (this.quillEditor) this.quillEditor.setText('')
+                    this.params = JSON.parse(JSON.stringify(this.defaultData));
+                    this.isEdit = true;
+                },
+
+                closeMsgPopUp() {
+                    this.isEdit = false;
+                    this.selectedTab = this.prevTab;
+                    this.searchMails();
+                },
+
+                showMessage(msg = '', type = 'success') {
+                    const toast = window.Swal.mixin({
+                        toast: true,
+                        position: 'top',
+                        showConfirmButton: false,
+                        timer: 3000,
+                    });
+                    toast.fire({
+                        icon: type,
+                        title: msg,
+                        padding: '10px 20px',
+                    });
+                },
+
+            }));
+
+        });
+
+        $(".mailbox").on("click", "button", function(){
+            if ( $(window).width() < 800 ) {
+                setTimeout( _ => { $(".editor-text").css({"max-height": "11rem", "overflow": "auto"}) }, 100);
+                $(".screen_loader2").css("top", "15rem");
+            }
+        });
+
+    </script>
+
+{% endblock %}

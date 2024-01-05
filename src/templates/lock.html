@@ -1,0 +1,77 @@
+{% extends 'layout/auth.html' %}
+{% load filters %}
+{% block content %}
+
+    <div class="page-title" text="lockscreen"></div>
+
+    <div class="login-form no-select flex justify-center items-center min-h-screen bg-cover bg-center">
+        <div class="panel sm:w-[480px] m-6 max-w-lg w-full">
+            <div class="flex items-center mb-7" style="align-items: flex-start;">
+                <div class="ltr:mr-4 rtl:ml-4 layer-div">
+                    <img src="/static/media/admin/{{ admin.image }}" class="w-16 h-16 object-cover rounded-full" 
+                        style="width: 3.2rem; height: 3.2rem; background: rgba(0, 0, 0, .4);">
+                </div>
+                <div class="flex-1">
+                    <h4 class="text-2xl default" style="font-size: 1.3rem; margin: -1px 0 1px 0;">{{ admin.name }}</h4>
+                    <p class="default" style="font-size: .75rem;" text="unlock_msg"></p>
+                </div>
+            </div>
+            <form class="space-y-5 unlock_form" method="POST">
+                <div class="input">
+                    <label for="password" class="mb-3" text="password"></label>
+                    <input id="password" type="password" class="form-input" autocomplete="off" required>
+                    <p class="text-danger mt-2 hide password-error" style="opacity: .96;" text="password_error"></p>
+                </div>
+                <button type="submit" class="btn btn-primary w-full" style="margin-top: 1.5rem; margin-bottom: .5rem;" text="unlock"></button>
+                <p class="text-danger mt-2 all-error hide " style="opacity: .96; margin-bottom: -1rem" text="error_msg"></p>
+            </form>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block script %}
+
+    <script>
+
+        $(".unlock_form").submit(function(e){
+
+            e.preventDefault();
+            $(".screen_loader").css({"display": "flex", "align-items": "center"});
+            let password = $("input[id='password']").val();
+            
+            $.ajax({
+                url: "", method: "POST", data: {"password": password},
+                headers: {"X-XSRF-TOKEN": get_cookie("XSRF-TOKEN")},
+                success: (data) => {
+
+                    if ( data.status == "password" ) {
+                        $(".password-error").show();
+                        $("input[id='password']").css("border", "1px solid rgb(154, 44, 44)");
+                    }
+                    else {
+                        $(".password-error").hide();
+                        $("input[id='password']").css("border", "1px solid rgb(68, 110, 178)");
+                    }
+                    if ( data.status == true ) {
+                        history.back();
+                        location.replace("/");
+                        return false;
+                    }
+                    else $(".screen_loader").fadeOut(150);
+
+                },
+                error: (data) => {
+                    $(".work-error, .active-error").hide();
+                    $(".all-error").show();
+                    $(".screen_loader").fadeOut(150);
+                }
+            });
+
+        });
+
+        $("form .input input").focus();
+
+    </script>
+
+{% endblock %}

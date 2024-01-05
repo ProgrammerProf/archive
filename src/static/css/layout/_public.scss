@@ -1,0 +1,141 @@
+@mixin scroll ($background, $color, $width, $border, $hover) {
+
+    &::-webkit-scrollbar{ width: $width; }
+    &::-webkit-scrollbar-track{ background: $background; }
+    &::-webkit-scrollbar-thumb{ background: $color; border-radius: $border; }
+    @if ( $hover == 1 ) {
+        &::-webkit-scrollbar-thumb { background: none; }
+        &:hover{ &::-webkit-scrollbar-thumb{ background: $color; } }
+    }
+    @else {
+        &::-webkit-scrollbar-thumb { background: $color; }
+    }
+}
+@mixin rows ($number, $line_height) {
+
+    text-overflow: ellipsis;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: $number;
+    line-height: $line_height;
+    max-height: $number * $line_height;
+
+}
+@mixin loader ($background, $width, $border) {
+
+    --bd: #{$border};
+    --n: 10;
+    --g: 1deg;
+    width: #{$width};
+    aspect-ratio: 1;
+    border-radius: 50%;
+    padding: 1px;
+    background: conic-gradient(#0000, $background) content-box;
+    -webkit-mask:
+        repeating-conic-gradient(#0000 0deg,
+            #000 1deg calc(360deg/var(--n) - var(--g) - 1deg),
+            #0000     calc(360deg/var(--n) - var(--g)) calc(360deg/var(--n))),
+        radial-gradient(farthest-side,#0000 calc(98% - var(--bd)),#000 calc(100% - var(--bd)));
+            mask:
+        repeating-conic-gradient(#0000 0deg,
+            #000 1deg calc(360deg/var(--n) - var(--g) - 1deg),
+            #0000     calc(360deg/var(--n) - var(--g)) calc(360deg/var(--n))),
+        radial-gradient(farthest-side,#0000 calc(98% - var(--bd)),#000 calc(100% - var(--bd)));
+    -webkit-mask-composite: destination-in;
+            mask-composite: intersect;
+    animation: load .5s infinite steps(var(--n));
+    
+    @keyframes load { to{ transform: rotate(1turn) } }
+
+}
+@mixin media ($point){
+
+    @if $point == big {
+        @media (max-width: 1200px) {  @content; }
+    }
+    @if $point == large {
+        @media (max-width: 1025px) {  @content; }
+    }
+    @if $point == mobile {
+        @media (max-width: 600px) { @content; }
+    }
+    @if $point == small {
+        @media (max-width: 420px) { @content; }
+    }
+}
+*{
+    box-sizing: border-box;
+    margin: 0; border: 0; padding: 0; 
+    outline: none; text-decoration: none;
+    list-style: none; letter-spacing: .3px;
+    font-family: "Poppins" , sans-serif;
+}
+.no-select, .icon, img, button, a, a span, nav{
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    text-decoration: none;
+}
+.layer{
+    position: relative;
+    &::after{
+        content: ''; background: none;
+        position: absolute; top: 0; left: 0;
+        width: 100%; height: 100%;
+    }
+}
+body{
+    overflow: hidden;
+}
+.flex{ display: flex; justify-content: center; align-items: center; }
+.flex-wrap{ flex-wrap: wrap }
+.flex-start{ justify-content: flex-start; }
+.flex-end{ justify-content: flex-end }
+.flex-space{ justify-content: space-between }
+.flex-around{ justify-content: space-around }
+.flex-row{ flex-direction: row }
+.flex-column{ flex-direction: column }
+.align-start{ align-items: flex-start }
+.align-end{ align-items: flex-end; }
+.auto-margin{ margin: auto; }
+.auto-height{ display: block; height: auto; max-height: auto; text-overflow: clip; }
+.auto-width{ width: auto; max-width: auto; }
+.hide{ display: none; }
+.show{ display: block; }
+.circle{ border-radius: 50%; }
+.bold{ font-weight: bold; }
+.normal{ font-weight: normal; }
+.full-width{ width: 100%; }
+.full-height{ height: 100%; }
+.pointer{ cursor: pointer; }
+.relative{ position: relative; }
+.absolute{ position: absolute; top: 0; left: 0; }
+.fixed{ position: fixed; top: 0; left: 0; }
+.over-hide{ overflow: hidden; }
+.all-over-hide{ overflow: hidden; *{ overflow: hidden; } }
+.over-show{ overflow: visible; }
+.overx-hide{ overflow-x: hidden; }
+.overy-hide{ overflow-y: hidden; }
+.over-auto{ overflow: auto; }
+.overx-auto{ overflow-x: auto; }
+.overy-auto{ overflow-y: auto; }
+.ellipsis{ text-overflow: ellipsis; }
+.clip{ text-overflow: clip; }
+.one-line{ white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.no-letter-space{ letter-spacing: normal; }
+.hide-scroll{ &::-webkit-scrollbar { display: none; } }
+.no-visible{ visibility: hidden; }
+.visible{ visibility: visible; }
+.no-scroll{ &::-webkit-scrollbar{ display: none; } }
+.no-margin { margin: 0; }
+.no-padding { padding: 0; }
+.no-wrap { flex-wrap: nowrap; white-space: nowrap; }
+.right-text{ text-align: right; }
+.left-text{ text-align: left; }
+.right-margin{ margin: right; }
+.left-margin{ margin: left; }
+.default{ cursor: default; }
+.no-back { background: none; }
+.block{ display: block; }
+.reverse-row{ flex-direction: row-reverse; }

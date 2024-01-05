@@ -1,0 +1,340 @@
+{% extends 'layout/default.html' %}
+{% load filters %}
+{% block content %}
+
+    <div class="page-title" text="settings"></div>
+
+    <div x-data="{ tab: 'home' }" class="no-select">
+        <ul class="sm:flex font-semibold border-b border-[#ebedf2] dark:border-[#191e3a] mb-5 whitespace-nowrap overflow-y-auto">
+            <li class="inline-block">
+                <a class="set-text pointer flex gap-2 p-4 border-b border-transparent hover:border-primary hover:text-primary" :class="{ '!border-primary text-primary': tab == 'home' }" @click="tab='home'">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5">
+                        <path d="M4.97883 9.68508C2.99294 8.89073 2 8.49355 2 8C2 7.50645 2.99294 7.10927 4.97883 6.31492L7.7873 5.19153C9.77318 4.39718 10.7661 4 12 4C13.2339 4 14.2268 4.39718 16.2127 5.19153L19.0212 6.31492C21.0071 7.10927 22 7.50645 22 8C22 8.49355 21.0071 8.89073 19.0212 9.68508L16.2127 10.8085C14.2268 11.6028 13.2339 12 12 12C10.7661 12 9.77318 11.6028 7.7873 10.8085L4.97883 9.68508Z" stroke="currentColor" stroke-width="1.5"></path>
+                        <path d="M22 12C22 12 21.0071 12.8907 19.0212 13.6851L16.2127 14.8085C14.2268 15.6028 13.2339 16 12 16C10.7661 16 9.77318 15.6028 7.7873 14.8085L4.97883 13.6851C2.99294 12.8907 2 12 2 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
+                        <path d="M22 16C22 16 21.0071 16.8907 19.0212 17.6851L16.2127 18.8085C14.2268 19.6028 13.2339 20 12 20C10.7661 20 9.77318 19.6028 7.7873 18.8085L4.97883 17.6851C2.99294 16.8907 2 16 2 16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
+                    </svg>
+                    <span text="information"></span>
+                </a>
+            </li>
+            <li class="inline-block">
+                <a class="set-text pointer flex gap-2 p-4 border-b border-transparent hover:border-primary hover:text-primary" :class="{ '!border-primary text-primary': tab == 'setting' }" @click="tab='setting'">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" style="margin-top: 1px">
+                        <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.5"></circle>
+                        <path d="M3.66122 10.6392C4.13377 10.9361 4.43782 11.4419 4.43782 11.9999C4.43781 12.558 4.13376 13.0638 3.66122 13.3607C3.33966 13.5627 3.13248 13.7242 2.98508 13.9163C2.66217 14.3372 2.51966 14.869 2.5889 15.3949C2.64082 15.7893 2.87379 16.1928 3.33973 16.9999C3.80568 17.8069 4.03865 18.2104 4.35426 18.4526C4.77508 18.7755 5.30694 18.918 5.83284 18.8488C6.07287 18.8172 6.31628 18.7185 6.65196 18.5411C7.14544 18.2803 7.73558 18.2699 8.21895 18.549C8.70227 18.8281 8.98827 19.3443 9.00912 19.902C9.02332 20.2815 9.05958 20.5417 9.15224 20.7654C9.35523 21.2554 9.74458 21.6448 10.2346 21.8478C10.6022 22 11.0681 22 12 22C12.9319 22 13.3978 22 13.7654 21.8478C14.2554 21.6448 14.6448 21.2554 14.8478 20.7654C14.9404 20.5417 14.9767 20.2815 14.9909 19.9021C15.0117 19.3443 15.2977 18.8281 15.7811 18.549C16.2644 18.27 16.8545 18.2804 17.3479 18.5412C17.6837 18.7186 17.9271 18.8173 18.1671 18.8489C18.693 18.9182 19.2249 18.7756 19.6457 18.4527C19.9613 18.2106 20.1943 17.807 20.6603 17C20.8677 16.6407 21.029 16.3614 21.1486 16.1272M20.3387 13.3608C19.8662 13.0639 19.5622 12.5581 19.5621 12.0001C19.5621 11.442 19.8662 10.9361 20.3387 10.6392C20.6603 10.4372 20.8674 10.2757 21.0148 10.0836C21.3377 9.66278 21.4802 9.13092 21.411 8.60502C21.3591 8.2106 21.1261 7.80708 20.6601 7.00005C20.1942 6.19301 19.9612 5.7895 19.6456 5.54732C19.2248 5.22441 18.6929 5.0819 18.167 5.15113C17.927 5.18274 17.6836 5.2814 17.3479 5.45883C16.8544 5.71964 16.2643 5.73004 15.781 5.45096C15.2977 5.1719 15.0117 4.6557 14.9909 4.09803C14.9767 3.71852 14.9404 3.45835 14.8478 3.23463C14.6448 2.74458 14.2554 2.35523 13.7654 2.15224C13.3978 2 12.9319 2 12 2C11.0681 2 10.6022 2 10.2346 2.15224C9.74458 2.35523 9.35523 2.74458 9.15224 3.23463C9.05958 3.45833 9.02332 3.71848 9.00912 4.09794C8.98826 4.65566 8.70225 5.17191 8.21891 5.45096C7.73557 5.73002 7.14548 5.71959 6.65205 5.4588C6.31633 5.28136 6.0729 5.18269 5.83285 5.15108C5.30695 5.08185 4.77509 5.22436 4.35427 5.54727C4.03866 5.78945 3.80569 6.19297 3.33974 7C3.13231 7.35929 2.97105 7.63859 2.85138 7.87273" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
+                    </svg>
+                    <span text="configrations"></span>
+                </a>
+            </li>
+            <li class="inline-block">
+                <a class="set-text pointer flex gap-2 p-4 border-b border-transparent hover:border-primary hover:text-primary" :class="{ '!border-primary text-primary': tab == 'setting1' }" @click="tab='setting1'">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-4.5 h-4.5" style="margin-top: 1px">
+                        <path d="M4.00655 7.93309C3.93421 9.84122 4.41713 13.0817 7.6677 16.3323C8.45191 17.1165 9.23553 17.7396 10 18.2327M5.53781 4.93723C6.93076 3.54428 9.15317 3.73144 10.0376 5.31617L10.6866 6.4791C11.2723 7.52858 11.0372 8.90532 10.1147 9.8278C10.1147 9.8278 10.1147 9.8278 10.1147 9.8278C10.1146 9.82792 8.99588 10.9468 11.0245 12.9755C13.0525 15.0035 14.1714 13.8861 14.1722 13.8853C14.1722 13.8853 14.1722 13.8853 14.1722 13.8853C15.0947 12.9628 16.4714 12.7277 17.5209 13.3134L18.6838 13.9624C20.2686 14.8468 20.4557 17.0692 19.0628 18.4622C18.2258 19.2992 17.2004 19.9505 16.0669 19.9934C15.2529 20.0243 14.1963 19.9541 13 19.6111" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
+                    </svg>
+                    <span text="danger_zone"></span>
+                </a>
+            </li>
+        </ul>
+        <template x-if="tab === 'home'">
+            <div id="home-tab">
+                <form class="border border-[#ebedf2] dark:border-[#191e3a] rounded-md p-4 mb-5 bg-white dark:bg-[#0e1726]">
+                    <h6 class="text-lg font-bold mb-5" text="general_information"></h6>
+                    <div class="flex flex-col sm:flex-row">
+                        <div class="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-6 home-form">
+                            <div>
+                                <label for="name" text="name"></label>
+                                <input name="name" type="text" class="form-input" autocomplete="off" value="{{ setting.name|value }}">
+                            </div>
+                            <div>
+                                <label for="phone" text="phone"></label>
+                                <input name="phone" type="text" class="form-input" autocomplete="off" value="{{ setting.phone|value }}">
+                            </div>
+                            <div class="grid gap-4 md:grid-cols-2">
+                                <div>
+                                    <label for="language" text="language"></label>
+                                    <select name="language" class="form-select flex-1">
+                                        <option value="en" text="english"></option>
+                                        <option value="ar" text="arabic"></option>
+                                    </select>
+                                    <script>
+                                        setTimeout( _ => {
+                                            $("#home-tab select[name='language']").val("{{ setting.language|value }}" || "ar")
+                                        });
+                                    </script>
+                                </div>
+                                <div>
+                                    <label for="city" text="location"></label>
+                                    <input name="city" type="text" class="form-input" autocomplete="off" value="{{ setting.city|value }}">
+                                </div>
+                            </div>
+                            <div>
+                                <label for="email" text="email"></label>
+                                <input name="email" type="text" class="form-input" autocomplete="off" value="{{ setting.email|value }}">
+                            </div>
+                            <div>
+                                <label for="facebook" text="facebook"></label>
+                                <input name="facebook" type="text" class="form-input" autocomplete="off" value="{{ setting.facebook|value }}">
+                            </div>
+                            <div>
+                                <label for="whatsapp" text="whatsapp"></label>
+                                <input name="whatsapp" type="text" class="form-input" autocomplete="off" value="{{ setting.whatsapp|value }}">
+                            </div>
+                            <div>
+                                <label for="youtube" text="youtube"></label>
+                                <input name="youtube" type="text" class="form-input" autocomplete="off" value="{{ setting.youtube|value }}">
+                            </div>
+                            <div>
+                                <label for="instagram" text="instagram"></label>
+                                <input name="instagram" type="text" class="form-input" autocomplete="off" value="{{ setting.instagram|value }}">
+                            </div>
+                            <div>
+                                <label for="telegram" text="telegram"></label>
+                                <input name="telegram" type="text" class="form-input" autocomplete="off" value="{{ setting.telegram|value }}">
+                            </div>
+                            <div class="sm:col-span-2 mt-0 mb-3 buttons-actions flex justify-end">
+                                <button type="button" class="btn btn-primary save-data" style="width: 10rem" text="save"></button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </template>
+        <template x-if="tab === 'setting'">
+            <div class="switch" id="setting-tab">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-5">
+                    <div class="panel space-y-5">
+                        <h5 class="font-semibold text-lg mb-4" text="theme"></h5>
+                        <div class="flex justify-around">
+                            <label class="inline-flex cursor-pointer">
+                                {% if setting.theme == "light" %}
+                                    <input class="form-radio ltr:mr-4 rtl:ml-4 cursor-pointer" type="radio" checked name="flexRadioDefault">
+                                {% else %}
+                                    <input class="form-radio ltr:mr-4 rtl:ml-4 cursor-pointer" type="radio" name="flexRadioDefault">
+                                {% endif %}
+                                <span>
+                                    <img class="ms-3" width="100" height="68" alt="settings-dark" src="/static/media/public/settings-light.svg" />
+                                </span>
+                            </label>
+                            <label class="inline-flex cursor-pointer">
+                                {% if setting.theme != "light" %}
+                                    <input class="form-radio ltr:mr-4 rtl:ml-4 cursor-pointer" type="radio" checked name="flexRadioDefault">
+                                {% else %}
+                                    <input class="form-radio ltr:mr-4 rtl:ml-4 cursor-pointer" type="radio" name="flexRadioDefault">
+                                {% endif %}
+                                <span>
+                                    <img class="ms-3" width="100" height="68" alt="settings-light" src="/static/media/public/settings-dark.svg" />
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="panel space-y-5">
+                        <h5 class="font-semibold text-lg mb-4" text="active_data"></h5>
+                        <p>
+                            Download all active data from <span class="text-primary">system</span> in files.
+                        </p>
+                        <button type="button" class="btn btn-primary download-data" text="download"></button>
+                    </div>
+                </div>
+                <div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                        <div class="panel space-y-5">
+                            <h5 class="font-semibold text-lg mb-4" text="registerations"></h5>
+                            <p text="register_news"></p>
+                            <label class="w-12 h-6 relative">
+                                {% if setting.enable_registerations %}
+                                    <input checked id="enable_registerations" type="checkbox" class="custom_switch absolute w-full h-full opacity-0 z-10 cursor-pointer peer">
+                                {% else %}
+                                    <input id="enable_registerations" type="checkbox" class="custom_switch absolute w-full h-full opacity-0 z-10 cursor-pointer peer">
+                                {% endif %}
+                                <span for="custom_switch_checkbox1" class="bg-[#ebedf2] dark:bg-dark block h-full rounded-full before:absolute before:left-1 before:bg-white dark:before:bg-white-dark dark:peer-checked:before:bg-white before:bottom-1 before:w-4 before:h-4 before:rounded-full peer-checked:before:left-7 peer-checked:bg-primary before:transition-all before:duration-300"></span>
+                            </label>
+                        </div>
+                        <div class="panel space-y-5">
+                            <h5 class="font-semibold text-lg mb-4" text="bookings"></h5>
+                            <p text="bookings_news"></p>
+                            <label class="w-12 h-6 relative">
+                                {% if setting.enable_bookings %}
+                                    <input checked id="enable_bookings" type="checkbox" class="custom_switch absolute w-full h-full opacity-0 z-10 cursor-pointer peer">
+                                {% else %}
+                                    <input id="enable_bookings" type="checkbox" class="custom_switch absolute w-full h-full opacity-0 z-10 cursor-pointer peer">
+                                {% endif %}
+                                <span for="custom_switch_checkbox1" class="bg-[#ebedf2] dark:bg-dark block h-full rounded-full before:absolute before:left-1 before:bg-white dark:before:bg-white-dark dark:peer-checked:before:bg-white before:bottom-1 before:w-4 before:h-4 before:rounded-full peer-checked:before:left-7 peer-checked:bg-primary before:transition-all before:duration-300"></span>
+                            </label>
+                        </div>
+                        <div class="panel space-y-5">
+                            <h5 class="font-semibold text-lg mb-4" text="notifications"></h5>
+                            <p text="notifications_news"></p>
+                            <label class="w-12 h-6 relative">
+                                {% if setting.enable_notifications %}
+                                    <input checked id="enable_notifications" type="checkbox" class="custom_switch absolute w-full h-full opacity-0 z-10 cursor-pointer peer">
+                                {% else %}
+                                    <input id="enable_notifications" type="checkbox" class="custom_switch absolute w-full h-full opacity-0 z-10 cursor-pointer peer">
+                                {% endif %}
+                                <span for="custom_switch_checkbox1" class="bg-[#ebedf2] dark:bg-dark block h-full rounded-full before:absolute before:left-1 before:bg-white dark:before:bg-white-dark dark:peer-checked:before:bg-white before:bottom-1 before:w-4 before:h-4 before:rounded-full peer-checked:before:left-7 peer-checked:bg-primary before:transition-all before:duration-300"></span>
+                            </label>
+                        </div>
+                        <div class="panel space-y-5">
+                            <h5 class="font-semibold text-lg mb-4" text="close_system"></h5>
+                            <p text="close_news"></p>
+                            <label class="w-12 h-6 relative">
+                                {% if setting.deactive %}
+                                    <input checked id="deactive" type="checkbox" class="custom_switch absolute w-full h-full opacity-0 z-10 cursor-pointer peer">
+                                {% else %}
+                                    <input id="deactive" type="checkbox" class="custom_switch absolute w-full h-full opacity-0 z-10 cursor-pointer peer">
+                                {% endif %}
+                                <span for="custom_switch_checkbox1" class="bg-[#ebedf2] dark:bg-dark block h-full rounded-full before:absolute before:left-1 before:bg-white dark:before:bg-white-dark dark:peer-checked:before:bg-white before:bottom-1 before:w-4 before:h-4 before:rounded-full peer-checked:before:left-7 peer-checked:bg-primary before:transition-all before:duration-300"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </template>
+        <template x-if="tab === 'setting1'">
+            <div class="switch" id="setting-private-tab">
+                <div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                        <div class="panel space-y-5">
+                            <h5 class="font-semibold text-lg mb-4" text="delete_mails"></h5>
+                            <p><span class="text-danger"><span text="note"></span> : </span> <span text="delete_news"></span></p>
+                            <button class="btn btn-danger" id="mails" text="delete"></button>
+                        </div>
+                        <div class="panel space-y-5">
+                            <h5 class="font-semibold text-lg mb-4" text="delete_categories"></h5>
+                            <p><span class="text-danger"><span text="note"></span> : </span> <span text="delete_news"></span></p>
+                            <button class="btn btn-danger" id="categories" text="delete"></button>
+                        </div>
+                        <div class="panel space-y-5">
+                            <h5 class="font-semibold text-lg mb-4" text="delete_products"></h5>
+                            <p><span class="text-danger"><span text="note"></span> : </span> <span text="delete_news"></span></p>
+                            <button class="btn btn-danger" id="courses" text="delete"></button>
+                        </div>
+                        <div class="panel space-y-5">
+                            <h5 class="font-semibold text-lg mb-4" text="delete_orders"></h5>
+                            <p><span class="text-danger"><span text="note"></span> : </span> <span text="delete_news"></span></p>
+                            <button class="btn btn-danger" id="bookings" text="delete"></button>
+                        </div>
+                        <div class="panel space-y-5">
+                            <h5 class="font-semibold text-lg mb-4" text="delete_lecturers"></h5>
+                            <p><span class="text-danger"><span text="note"></span> : </span> <span text="delete_news"></span></p>
+                            <button class="btn btn-danger" id="lecturers" text="delete"></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </template>
+    </div>
+
+{% endblock %}
+
+{% block script %}
+    
+    <script>
+
+        setTimeout( _ => { $(window).scrollTop(0); }, 100);
+        setTimeout( _ => { set_text() }, 1000);
+
+        const save_data = _ => {
+
+            let data = {
+                "name": $("#home-tab input[name='name']").val(),
+                "email": $("#home-tab input[name='email']").val(),
+                "phone": $("#home-tab input[name='phone']").val(),
+                "city": $("#home-tab input[name='city']").val(),
+                "url": $("#home-tab input[name='url']").val(),
+                "language": $("#home-tab select[name='language']").val(),
+                "facebook": $("#home-tab input[name='facebook']").val(),
+                "whatsapp": $("#home-tab input[name='whatsapp']").val(),
+                "telegram": $("#home-tab input[name='telegram']").val(),
+                "twetter": $("#home-tab input[name='twetter']").val(),
+                "instagram": $("#home-tab input[name='instagram']").val(),
+                "youtube": $("#home-tab input[name='youtube']").val(),
+                "linkedin": $("#home-tab input[name='linkedin']").val(),
+            }
+
+            $(".screen_loader1").css({"display": "flex", "align-items": "center"});
+
+            $.ajax({
+                url: "", method: "POST", data: data,
+                headers: {"X-XSRF-TOKEN": get_cookie("XSRF-TOKEN"), "request": "save_data"},
+                success: (data) => {
+                    $(".screen_loader1").fadeOut(100);
+                    setTimeout( _ => { show_msg(text('success_system'), "success"); }, 100);
+                    $(window).scrollTop(0);
+                },
+                error: (data) => {
+                    $(".screen_loader1").fadeOut(100);
+                    setTimeout( _ => { show_msg(text('error_data'), "error"); }, 100);
+                }
+            });
+
+        }
+
+        const save_setting = _ => {
+
+            let data = {
+                "theme": $("#setting-tab input[name='flexRadioDefault']").first().prop("checked") ? "light" : "dark",
+                "enable_registerations": $("#setting-tab input[id='enable_registerations']").prop("checked"),
+                "enable_bookings": $("#setting-tab input[id='enable_bookings']").prop("checked"),
+                "enable_notifications": $("#setting-tab input[id='enable_notifications']").prop("checked"),
+                "deactive": $("#setting-tab input[id='deactive']").prop("checked"),
+            };
+            
+            $(".screen_loader1").css({"display": "flex", "align-items": "center"});
+
+            $.ajax({
+                url: "", method: "POST", data: data,
+                headers: {"X-XSRF-TOKEN": get_cookie("XSRF-TOKEN"), "request": "save_options"},
+                success: (data) => {
+                    $(".screen_loader1").fadeOut(100);
+                    setTimeout( _ => { show_msg(text('success_system'), "success"); }, 100);
+                    $(window).scrollTop(0);
+                },
+                error: (data) => {
+                    $(".screen_loader1").fadeOut(100);
+                    setTimeout( _ => { show_msg(text('error_data'), "error"); }, 100);
+                }
+            });
+
+        }
+
+        const deletes = _ => {
+
+            $(".screen_loader1").css({"display": "flex", "align-items": "center"});
+
+            $.ajax({
+                url: "", method: "POST", data: {'btn': $(_).attr("id")},
+                headers: {"X-XSRF-TOKEN": get_cookie("XSRF-TOKEN"), "request": "deletes"},
+                success: (data) => {
+                    $(".screen_loader1").fadeOut(100);
+                    setTimeout( () => { show_msg(text('success_delete'), "success"); }, 100);
+                    $(window).scrollTop(0);
+                },
+                error: (data) => {
+                    $(".screen_loader1").fadeOut(100);
+                    setTimeout( _ => { show_msg(text('error_data'), "error"); }, 100);
+                }
+           });
+
+        }
+
+        $(window).on("load resize click", function(){
+            if ( $(window).width() < 600 ) {
+                $(".home-form").css({"padding": "0"});
+                $(".buttons-actions button").css({"margin": "1rem auto .5rem", "width": "100%"});
+            }
+        });
+
+        $(document).on("click", "#home-tab .save-data", function(){
+            save_data();
+        });
+        
+        $(document).on("click", "#setting-tab input", function(){
+            save_setting();
+        });
+
+        $(document).on("click", "#setting-private-tab button", function(){
+            if ( confirm(`${text('you_will')} ${$(this).parents(".panel").find("h5").text().trim()} ${text('from_system')} 😨`) ) deletes(this);
+        });
+        
+    </script>
+
+{% endblock %}

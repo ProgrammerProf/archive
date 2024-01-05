@@ -1,0 +1,38 @@
+{% extends 'layout/default.html' %}
+{% load filters %}
+{% block content %}
+
+    <div class="page-title" text="error_404"></div>
+
+    <div class="flex justify-center items-center flex-wrap error-page no-select">
+
+        <div class="image flex flex layer-div"><img src="/static/media/public/error.png"></div>
+
+        <div>
+
+            <h1 text="oops"></h1>
+
+            <p>
+                <span text="error_page1"></span><br>
+                <span text="error_page2"></span><br>
+                <span text="error_page3"></span>
+            </p>
+
+            <a href="/" class="btn btn-primary btn-badge" text="to_home"></a>
+            
+        </div>
+
+    </div>
+
+{% endblock %}
+
+{% block script %}
+    
+    <script>
+
+        $(".app-footer, .horizontal-menu, .side-bar, .scroll-top, .details-div, .msgs, .loader2").remove();
+        $(".main-content").css({"margin": '0', "left": 0, "width": "100%"});
+
+    </script>
+
+{% endblock %}

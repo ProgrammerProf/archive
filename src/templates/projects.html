@@ -1,0 +1,93 @@
+{% extends 'layout/default.html' %}
+{% load filters %}
+{% block content %}
+    
+    <div class="page-title" text="Projects"></div>
+
+    <div class="edit-item-info list-projects">
+
+        {% for project in projects %}
+
+            <div class="card">
+
+                <div class="panel w-full">
+
+                    <div class="mb-5 flex justify-between">
+    
+                        {% if project.finished %}
+                            <h4 class="text-base font-semibold no-select">Finished</h4>
+                            <button type="button" class="default no-outline flex">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-success">
+                                    <circle cx="5" cy="12" r="2" stroke="currentColor" stroke-width="1.5"></circle>
+                                    <circle opacity="0.5" cx="12" cy="12" r="2" stroke="currentColor" stroke-width="1.5"></circle>
+                                    <circle cx="19" cy="12" r="2" stroke="currentColor" stroke-width="1.5"></circle>
+                                </svg>
+                            </button>
+                        {% else %}
+                            <h4 class="text-base font-semibold no-select">Pending</h4>
+                            <button type="button" class="default no-outline flex">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-warning">
+                                    <circle cx="5" cy="12" r="2" stroke="currentColor" stroke-width="1.5"></circle>
+                                    <circle opacity="0.5" cx="12" cy="12" r="2" stroke="currentColor" stroke-width="1.5"></circle>
+                                    <circle cx="19" cy="12" r="2" stroke="currentColor" stroke-width="1.5"></circle>
+                                </svg>
+                            </button>
+                        {% endif %}
+    
+                    </div>
+    
+                    <div class="min-h-[150px]">
+    
+                        <div class="mb-5 default space-y-3 rounded-md bg-[#f4f4f4] p-3 pb-5 shadow dark:bg-[#262e40]">
+    
+                            <div class="text-base font-semibold">{{ project.name|value }}</div>
+    
+                            <p class="break-all">{{ project.description|value }} &nbsp;</p>
+                        
+                            <div class="flex items-center justify-between no-select pt-6">
+    
+                                <div class="flex items-center mt-6 mb-1">
+                                    <span class="material-symbols-outlined icon ltr:mr-2 rtl:ml-2">check_circle</span>
+                                    <span class="font-semibold">{{ project.date|date }}</span>
+                                </div>
+    
+                            </div>
+                            <div class="flex items-center justify-between no-select">
+    
+                                <div class="flex items-cente">
+                                    <span class="material-symbols-outlined icon ltr:mr-2 rtl:ml-2 no-margin">alarm</span>
+                                    {% if project.days == 1 or project.days == 0 %}
+                                        <span class="font-semibold">{{ project.days }} <span text="day"></span></span>
+                                    {% else %}
+                                        <span class="font-semibold">{{ project.days }} <span text="days"></span></span>
+                                    {% endif %}
+                                </div>
+    
+                            </div>
+
+                        </div>
+                
+                    </div>
+    
+                    <div class="mt-6 mb-2">
+    
+                        <button type="button" class="btn btn-primary mx-auto no-select" 
+                            onclick="localStorage.setItem('project', '{{project.id}}'); location.href = '/add-single-task'">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5">
+                                <line x1="12" y1="5" x2="12" y2="19"></line>
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                            </svg>
+                            Add Task
+                        </button>
+    
+                    </div>
+    
+                </div>
+
+            </div>
+
+        {% endfor %}
+
+    </div>
+
+{% endblock %}
