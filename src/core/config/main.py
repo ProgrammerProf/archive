@@ -41,8 +41,8 @@ def default():
     try:
         if user.objects.filter(super=True).exists(): return
         user(
-            name="Super Admin", email="super@gmail.com", password="super123", super=True,
-            date=get_date(), mail=True, categories=True, courses=True,
+            name="Super Admin", email="super@gmail.com", password="super123",
+            super=True, date=get_date(),
         ).save()
         setting(name="Website").save()
     except: ...

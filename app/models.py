@@ -15,8 +15,8 @@ class user(models.Model):
     image = models.CharField(max_length=255, default="default.png")
     role = models.IntegerField(default=1)
     super = models.BooleanField(default=False)
-    mail = models.BooleanField(default=False)
-    tasks = models.BooleanField(default=False)
+    mail = models.BooleanField(default=True)
+    tasks = models.BooleanField(default=True)
     active = models.BooleanField(default=True)
 
 class mail(models.Model):
