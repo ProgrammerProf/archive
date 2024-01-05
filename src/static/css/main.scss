@@ -633,7 +633,7 @@ body.dark-mode{
     }
     &.list-projects{
         display: flex; justify-content: flex-start;
-        align-items: center; flex-wrap: wrap;
+        align-items: flex-start; flex-wrap: wrap;
 
         .card{
             width: 33.3333%; padding: .5rem .5rem .8rem;

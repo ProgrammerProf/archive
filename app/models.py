@@ -83,5 +83,5 @@ class task(models.Model):
     rate = models.FloatField(default=0)
     days = models.IntegerField(default=0)
     date = models.CharField(max_length=255, null=True, blank=True)
-    finished = models.BooleanField(default=True)
+    finished = models.BooleanField(default=False)
     active = models.BooleanField(default=True)

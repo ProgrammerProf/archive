@@ -809,7 +809,7 @@ body.dark-mode {
 .edit-item-info.list-projects {
   display: flex;
   justify-content: flex-start;
-  align-items: center;
+  align-items: flex-start;
   flex-wrap: wrap;
 }
 .edit-item-info.list-projects .card {

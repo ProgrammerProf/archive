@@ -340,6 +340,6 @@ let _arabic_data_ = {
     "archive": "Archive",
     "all_tasks": "جميع المهمات",
     "day": "يوم",
-    "": "",
+    "open": "فتح",
     "": "",
 }

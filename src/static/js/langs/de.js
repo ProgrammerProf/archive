@@ -342,6 +342,6 @@ let _german_data_ = {
     "all_tasks": "All Tasks",
     "day": "Day",
     "days": "Days",
-    "": "",
+    "open": "Open",
     "": "",
 }

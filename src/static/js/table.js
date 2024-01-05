@@ -95,7 +95,10 @@ function _set_file_ ( isdelete ) {
                                 <td><a class="default">${_.size}</a></td>
                                 <td><a class="default">${_.date}</a></td>
                                 <td class="buttons gap-4">
-                                    <a href="${_.link}" class="btn btn-sm btn-outline-primary pointer" download="${_.name}">
+                                    <a href="${_.link}" class="btn btn-sm btn-outline-primary pointer" target="_blank">
+                                        ${text('open')}
+                                    </a>
+                                    <a href="${_.link}" class="btn btn-sm btn-outline-success pointer" download="${_.name}">
                                         ${text('download')}
                                     </a>
                                     ${
@@ -145,7 +148,8 @@ function _add_file_ ( row, isdelete ) {
             <td><a class="default">${row.size}</a></td>
             <td><a class="default">${row.date}</a></td>
             <td class="buttons gap-4">
-                <a href="${row.link}" class="btn btn-sm btn-outline-primary pointer" download="${row.name}">${text('download')}</a>
+                <a href="${row.link}" class="btn btn-sm btn-outline-primary pointer" target="_blank">${text('open')}</a>
+                <a href="${row.link}" class="btn btn-sm btn-outline-success pointer" download="${row.name}">${text('download')}</a>
                 <button class="btn btn-sm btn-outline-danger" onclick="_delete_file_(${row.id})">${text('delete')}</button>
             </td>
         </tr>

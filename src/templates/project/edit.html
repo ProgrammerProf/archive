@@ -159,7 +159,8 @@
                                                 <a class="font-semibold default">{{ch.date}}</a>
                                             </td>
                                             <td class="buttons gap-4">
-                                                <a href="/static/media/task/{{ch.link}}" class="btn btn-sm btn-outline-primary" download text="download"></a>
+                                                <a href="/static/media/task/{{ch.link}}" class="btn btn-sm btn-outline-primary" target="_blank" text="open"></a>
+                                                <a href="/static/media/task/{{ch.link}}" class="btn btn-sm btn-outline-success" download text="download"></a>
                                                 <button class="btn btn-sm btn-outline-danger" text="delete" onclick="delete_item('{{ch.id}}', 'file')"></button>
                                             </td>
                                         </tr>
