@@ -1,5 +1,5 @@
 let _arabic_data_ = {
-    "logo": "Micro-chiving ✨",
+    "logo": "Micro-chiving",
     "profile": "الحساب",
     "mailbox": "الإيميلات",
     "chat": "الشات",

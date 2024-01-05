@@ -1,5 +1,5 @@
 let _english_data_ = {
-    "logo": "Micro-chiving ✨",
+    "logo": "Micro-chiving",
     "profile": "Profile",
     "mailbox": "Mailbox",
     "chat": "Chat",
